@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>tagcloud - Demo</title>
+    <link rel="stylesheet" href="/static/plugins/tagcloud/tagcloud.css"> <!-- css -->
+     
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>  
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>  
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>  
+    <style type="text/css">  
+        .dropdown-submenu {  
+            position: relative;  
+        }  
+        .dropdown-submenu > .dropdown-menu {  
+            top: 0;  
+            left: 100%;  
+            margin-top: -6px;  
+            margin-left: -1px;  
+            -webkit-border-radius: 0 6px 6px 6px;  
+            -moz-border-radius: 0 6px 6px;  
+            border-radius: 0 6px 6px 6px;  
+        }  
+        .dropdown-submenu:hover > .dropdown-menu {  
+            display: block;  
+        }  
+        .dropdown-submenu > a:after {  
+            display: block;  
+            content: " ";  
+            float: right;  
+            width: 0;  
+            height: 0;  
+            border-color: transparent;  
+            border-style: solid;  
+            border-width: 5px 0 5px 5px;  
+            border-left-color: #ccc;  
+            margin-top: 5px;  
+            margin-right: -10px;  
+        }  
+        .dropdown-submenu:hover > a:after {  
+            border-left-color: #fff;  
+        }  
+        .dropdown-submenu.pull-left {  
+            float: none;  
+        }  
+        .dropdown-submenu.pull-left > .dropdown-menu {  
+            left: -100%;  
+            margin-left: 10px;  
+            -webkit-border-radius: 6px 0 6px 6px;  
+            -moz-border-radius: 6px 0 6px 6px;  
+            border-radius: 6px 0 6px 6px;  
+        }  
+    </style> 
+    <style>
+        body{
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+        #light{
+            background: #666;
+            color: #fff;
+        }
+        .box{
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            margin-top: -300px;
+            margin-left: -200px;
+        }
+        .box.box1{
+            left: auto;
+            right: 15%;
+            margin-left: 0;
+        }
+        .box2{
+            position: fixed;
+            top: 50%;
+            left: 15%;
+            width: 400px;
+            height: 400px;
+            margin-top: -300px;
+        }
+    </style>
+</head>
+<body>
+    <div style="height:600px;width:800px;" class="box">
+        <!-- begin -->
+        <div class="tagcloud">  <!-- class="tagcloud" - 用途js.css -->
+            <a href="http://www.baidu.com">百度</a>
+            <a href="/config"><button class="btn btn-success">配置管理</button></a>
+            <div class="dropdown">  
+                <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#"  
+                href="javascript:;">  
+                    下拉多级菜单2 <span class="caret"></span>  
+                </a>  
+                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">  
+                    <li><a href="javascript:;">一级菜单</a></li>  
+                    <li><a href="javascript:;">一级菜单</a></li>  
+                    <li class="divider"></li>  
+                    <li class="dropdown-submenu">  
+                        <a tabindex="-1" href="javascript:;">一级菜单</a>  
+                        <ul class="dropdown-menu">  
+                            <li><a tabindex="-1" href="javascript:;">二级菜单</a></li>  
+                            <li class="divider"></li>  
+                            <li class="dropdown-submenu">  
+                                <a href="javascript:;">二级菜单</a>  
+                                <ul class="dropdown-menu">  
+                                    <li><a href="http://www.baidu.com">三级菜单</a></li>  
+                                </ul>  
+                            </li>  
+                        </ul>  
+                    </li>  
+                </ul>  
+            </div>
+            <div class="dropdown">  
+                <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#"  
+                href="javascript:;">  
+                    下拉多级菜单 <span class="caret"></span>  
+                </a>  
+                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">  
+                    <li><a href="javascript:;">一级菜单</a></li>  
+                    <li><a href="javascript:;">一级菜单</a></li>  
+                    <li class="divider"></li>  
+                    <li class="dropdown-submenu">  
+                        <a tabindex="-1" href="javascript:;">一级菜单</a>  
+                        <ul class="dropdown-menu">  
+                            <li><a tabindex="-1" href="javascript:;">二级菜单</a></li>  
+                            <li class="divider"></li>  
+                            <li class="dropdown-submenu">  
+                                <a href="javascript:;">二级菜单</a>  
+                                <ul class="dropdown-menu">  
+                                    <li><a href="http://www.baidu.com">三级菜单</a></li>  
+                                </ul>  
+                            </li>  
+                        </ul>  
+                    </li>  
+                </ul>  
+            </div>
+        </div>
+        <!-- end -->
+    </div>
+   
+<script src="/static/plugins/tagcloud/tagcloud.js"></script> <!-- js -->
+<script>
+    /* 参数列表
+     {   参数名: 默认值
+         selector: ".tagcloud",  //元素选择器
+         fontsize: 16,       //基本字体大小, 单位px
+         radius: 60,         //滚动半径, 单位px
+         mspeed: "normal",   //滚动最大速度, 取值: slow, normal(默认), fast
+         ispeed: "normal",   //滚动初速度, 取值: slow, normal(默认), fast
+         direction: 135,     //初始滚动方向, 取值角度(顺时针360): 0对应top, 90对应left, 135对应right-bottom(默认)...
+         keep: true          //鼠标移出组件后是否继续随鼠标滚动, 取值: false, true(默认) 对应 减速至初速度滚动, 随鼠标滚动
+     }
+     */
+    var tc = tagcloud({
+        fontsize: 30,
+        radius: 300,
+        mspeed:"slow",
+        ispeed:"slow",
+        direction:135,
+        keep:true
+    }); //调用js
+    console.log(tc);
+    
+</script>
+<script src="//congm.in/tongji/code.congm.in.js"></script>
+</body>
+</html>
