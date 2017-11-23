@@ -279,20 +279,20 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
-                        <h4 style="color: red" class="modal-title" id="modelt" align="center">请输入用户名和密码</h4>
+                        <h4 style="color: red" class="modal-title" id="modelt" align="center">新增|修改</h4>
                     </div>
                     <div class="modal-body">
                         <div>
-                            <label>用户名</label>
+                            <label>Key</label>
                             <div class="form-group">
-                                <input type="text" id="username" class="form-control" name="username" placeholder="用户名" />
+                                <input type="text" id="key" class="form-control" name="key" placeholder="key" />
                             </div>
-                            <label>密码</label>
+                            <label>Value</label>
                             <div class="form-group">
-                                <input type="password" id="password" class="form-control" name="password" placeholder="密码" />
+                                <input type="text" id="value" class="form-control" name="value" placeholder="值" />
                             </div>
                             <div class="form-group">
-                                <button @click="install" name="submit" class="btn btn-primary">提交</button>
+                                <button @click="edits" name="submit" class="btn btn-primary">提交</button>
                             </div>
                         </div>
                     </div>
@@ -315,7 +315,7 @@
                     <transition name="slide-fade">
                         <div v-if="show">
                             <div v-if="tabs" id="toolbar">
-                                <!--<a href="#passwd" data-toggle="modal" id="install" class="btn btn-primary">
+                                <!-- <a href="#passwd" data-toggle="modal" id="install" class="btn btn-primary">
                                     <i class="glyphicon glyphicon-wrench"></i> 批量安装
                                 </a>
                                 <button @click="refff" class="btn btn-success">
@@ -327,15 +327,14 @@
                                 <button id="showeditable" class="btn btn-primary" @click="enable">
                                     <i class="glyphicon glyphicon-edit"></i> 编辑
                                 </button>
-                                <input :value="tableName" disabled="disabled" style="width: 100px;" >
-                                -->
+                                <input :value="tableName" disabled="disabled" style="width: 100px;" > -->
+                               
                                 <!--<button id="treebtn" class="btn btn-info" @click="btnTree" v-show="btntree">-->
                                     <!--<i class="glyphicon glyphicon-list-alt"></i> 显示表-->
                                 <!--</button>-->
                             </div>
                             <!--data-filter-show-clear="true"-->
                             <table id="tabled"
-                                    data-toolbar="#toolbar"
                                     data-search="false"
                                     data-show-refresh="false"
                                     data-show-toggle="false"
@@ -346,7 +345,7 @@
                                     data-minimum-count-columns="2"
                                     data-show-pagination-switch="false"
                                     data-pagination="false"
-                                    data-page-size="5"
+                                    data-page-size="10"
                                     data-id-field="id"
                                     data-page-list="[10, 25, 50, 100, ALL]"
                                     data-show-footer="false"
@@ -459,7 +458,7 @@
             data:eval(<<.Tree>>),
             enableLinks:false,
             multiSelect:false,
-            showCheckbox:true,
+            showCheckbox:false,
             selectBackColor:'#FFFFFF',
         });
         $('#treeddd').on('nodeSelected',function (event,data) {
@@ -516,25 +515,6 @@
                             async: true,
 //                            data: {"id": id},
                             success: function (data) {
-//                                var data2 = eval(data);
-//                                var port_string = '';
-//                                var status_string = '';
-//                                var port_status_value = data2.port_status_value.split(";");
-//                                var port_server = data2.port_server.split(";");
-//                                 $.each(port_status_value, function(num, item){
-//                                                if (item == 'ok') {
-//                                                    port_string += '<button class="btn btn-success btn-xs" style="margin-bottom: 5px;"><span class="glyphicon glyphicon-ok" aria-hidden="true">' +port_server[num].replace(/[\r\n]/g,"") + '</span></button><br/>';
-//                                                }
-//                                                else {
-//                                                    port_string += '<button class="btn btn-danger btn-xs" style="margin-bottom: 5px;"><span class="glyphicon glyphicon-remove" aria-hidden="true">' + port_server[num].replace(/[\r\n]/g,"") + '</span></button><br/>'
-//                                                }
-//                                                {#                                $("#"+id+"_port_status_value").append(port_string);#}
-//                                                if (data2.status[num] == "no")
-//                                                    status_string += '<a href="#" class="btn btn-danger btn-xs" style="margin-bottom: 5px;">' + data2.btnmsg[num] + '</a><br/>';
-//                                                else
-//                                                    status_string += '<a href="#" class="btn btn-success btn-xs" style="margin-bottom: 5px;">' + data2.btnmsg[num] + '</a><br/>';
-//                                             });
-//                                {#                                $("#"+id+"_status").append(status_string);#}
                                 var ddd = data.split(",");
                                 $table.bootstrapTable('updateRow', {
                                     index:idx,
@@ -653,6 +633,20 @@
             });
         }
     }
+    function Delete(url){
+        if (confirm("你确定要删除 "+url+" 吗？")) {
+            $('#loading').show();
+            $.ajax({
+                url:"/options/delete?key="+url,
+                type:'get',
+                success:function(data){
+                    alert(data);
+                    $('#loading').hide();
+                    window.location.reload();
+                }
+            });
+        }
+    }
     function Clone(url){
         var commit = prompt("请输入git url(git@172.16.0.1:username/xxx.git)");
         if (confirm("你确定要执行该操作吗？")) {
@@ -764,6 +758,48 @@
 
                     });
                 });
+            },
+            delete:function(e){
+                var r = confirm("确认删除 "+e+" ?")
+                if (r==true) {
+                    $.ajax({
+                        type: "get",
+                        url: "/jump/scan?ip="+obj.ip+"&idc="+obj.机房,
+                        async: true,
+            //                            data: {"id": id},
+                        success: function (data) {
+                            var ddd = data.split(",");
+                            $table.bootstrapTable('updateRow', {
+                                index:idx,
+                                row: {
+                                    ppp: ddd[0],
+                                    status: ddd[1],
+                                    opinfo:'手动扫描完成'
+                                }
+                            });
+
+                        }
+
+                    }); 
+                }
+            },
+            edits:function(){
+                var r = confirm("确认修改?")
+                if (r==true) {
+                    key = $('#key').val();
+                    value = $('#value').val();
+                    $.ajax({
+                        type: "get",
+                        url: "/options/aedit?key="+key+"&value="+value,
+                        async: true,
+            //                            data: {"id": id},
+                        success: function (data) {
+                            alert(data);
+                            // window.location.reload();
+                        }
+
+                    }); 
+                }
             },
             install:function(){
                 if (confirm("你确定要执行该操作吗？")) {

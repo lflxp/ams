@@ -88,36 +88,13 @@
     <div style="height:600px;width:800px;" class="box">
         <!-- begin -->
         <div class="tagcloud">  <!-- class="tagcloud" - 用途js.css -->
-            <a href="http://www.baidu.com">百度</a>
-            <a href="/config"><button class="btn btn-success">配置管理</button></a>
+            <<range .Item>>
+                <<str2html .>>
+            <<end>>
             <div class="dropdown">  
                 <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#"  
                 href="javascript:;">  
                     下拉多级菜单2 <span class="caret"></span>  
-                </a>  
-                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">  
-                    <li><a href="javascript:;">一级菜单</a></li>  
-                    <li><a href="javascript:;">一级菜单</a></li>  
-                    <li class="divider"></li>  
-                    <li class="dropdown-submenu">  
-                        <a tabindex="-1" href="javascript:;">一级菜单</a>  
-                        <ul class="dropdown-menu">  
-                            <li><a tabindex="-1" href="javascript:;">二级菜单</a></li>  
-                            <li class="divider"></li>  
-                            <li class="dropdown-submenu">  
-                                <a href="javascript:;">二级菜单</a>  
-                                <ul class="dropdown-menu">  
-                                    <li><a href="http://www.baidu.com">三级菜单</a></li>  
-                                </ul>  
-                            </li>  
-                        </ul>  
-                    </li>  
-                </ul>  
-            </div>
-            <div class="dropdown">  
-                <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#"  
-                href="javascript:;">  
-                    下拉多级菜单 <span class="caret"></span>  
                 </a>  
                 <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">  
                     <li><a href="javascript:;">一级菜单</a></li>  

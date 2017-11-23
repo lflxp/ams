@@ -2,16 +2,39 @@ package controllers
 
 import (
 	"strings"
+	"time"
 	"github.com/astaxie/beego"
 	"github.com/lflxp/dbui/etcd"
 	"github.com/lflxp/ams/utils/cmdb"
-	"github.com/lflxp/ams/models"
+	. "github.com/lflxp/ams/models"
 	"github.com/lflxp/ams/utils/tool"
 	. "github.com/lflxp/ams/utils/db"
+	"github.com/lflxp/ams/utils/cache"
 )
 
 type MainController struct {
 	beego.Controller
+}
+
+func (this *MainController) Prepare() {
+	//记录访问日志
+	beegoSessionId := this.Ctx.GetCookie("beegosessionID")
+	username, isExist := cache.Cached.Get(beegoSessionId)
+	history := new(LoginHistory)
+	history.InsertTime = time.Now().Format("2006-01-02 15:04:05")
+	if isExist {
+		history.Username = username.(string)
+	} else {
+		history.Username = "未登陆用户"
+	}
+	history.Referer = this.Ctx.Request.Referer()
+	history.RemoteAddr = this.Ctx.Request.RemoteAddr
+	history.RequestURI = this.Ctx.Request.RequestURI
+	history.Host = this.Ctx.Request.Host
+	history.Method = this.Ctx.Request.Method
+	history.Proto = this.Ctx.Request.Proto
+	history.UserAgent = this.Ctx.Request.UserAgent()
+	Db.Engine.Insert(history)
 }
 
 func (this *MainController) Get() {
@@ -36,11 +59,23 @@ func (this *MainController) List() {
 }
 
 func (this *MainController) Main() {
+	data := []string{}
+	st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+	st.InitClientConn()
+	defer st.Close()
+	resp := st.More("/ams/main/index")
+	
+	for _,info := range resp.Kvs {
+		if strings.ContainsAny(string(info.Value),"::") {
+			data = append(data,strings.Split(string(info.Value),"::")[1])
+		}
+	}
+	this.Data["Item"] = data
 	this.TplName = "main/main.html"
 }
 
 func (this *MainController) Config() {
-	st := etcd.EtcdUi{Endpoints:[]string{"localhost:2379"}}
+	st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
 	this.Data["Brand"] = "配置管理" //top.html 主题显示
 	this.Data["Tree"] = st.GetTreeByString()
 	this.Data["Column"] = etcd.GetEtcdTemplate() 
@@ -53,7 +88,7 @@ func (this *MainController) Options() {
 	types := this.Ctx.Input.Param(":type")
 	if this.Ctx.Request.Method == "GET" {
 		if types == "history" {
-			datas := make([]models.CmdbTree, 0)
+			datas := make([]CmdbTree, 0)
 			err := Db.Engine.Find(&datas)
 			if err != nil {
 				this.Ctx.WriteString(err.Error())
@@ -61,8 +96,27 @@ func (this *MainController) Options() {
 			}
 			this.Data["json"] = datas
 			this.ServeJSON()
+		} else if types == "aedit" {
+			key := this.GetString("key")
+			value := this.GetString("value")
+			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			err := st.Add(key,value)
+			if err != nil {
+				this.Ctx.WriteString(err.Error())
+				return
+			}
+			this.Ctx.WriteString("success")
+		} else if types == "delete" {
+			key := this.GetString("key")
+			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			err := st.Delete(key)
+			if err != nil {
+				this.Ctx.WriteString(err.Error())
+				return
+			}
+			this.Ctx.WriteString("删除成功")
 		} else if types == "scan" {
-			sc := new(models.ServiceConfig)
+			sc := new(ServiceConfig)
 			//service := new(Service)
 			ip := this.GetString("ip")
 			idc := this.GetString("idc")
@@ -108,8 +162,11 @@ func (this *MainController) Options() {
 	} else if this.Ctx.Request.Method == "POST" {
 		if types == "check" {
 			name := this.GetString("ids")
+			if strings.Contains(name,"ETCD->") {
+				name = ""
+			}
 			//xxo := cmdb.Api.ParseData(name)
-			xxo := cmdb.Api.ParseDataEtcd(name,[]string{"localhost:2379"})
+			xxo := cmdb.Api.ParseDataEtcd(name,[]string{beego.AppConfig.String("etcd::url")})
 			this.Data["json"] = xxo
 			this.ServeJSON()
 			//
