@@ -33,24 +33,3 @@ type CmdbTree struct {
 	Create     		time.Time 	`xorm:"created"`                //这个Field将在Insert时自动赋值为当前时间
 	Update     		time.Time 	`xorm:"updated"`                //这个Field将在Insert或Update时自动赋值为当前时间
 }
-
-//登陆历史
-//println(this.Ctx.Request.Referer())
-//println(this.Ctx.Request.RemoteAddr)
-//println(this.Ctx.Request.RequestURI)
-//println(this.Ctx.Request.Host)
-//println(this.Ctx.Request.Method)
-//println(this.Ctx.Request.Proto)
-//println(this.Ctx.Request.UserAgent())
-type LoginHistory struct {
-	Id 		int64		`xorm:"autoincr"`
-	Username 	string		`xorm:"username varchar(40)"`
-	Referer 	string		`xorm:"referer varchar(200)"`
-	RemoteAddr 	string		`xorm:"remoteAddr varchar(40)"`
-	RequestURI 	string		`xorm:"requestURI varchar(40)"`
-	Host 		string		`xorm:"host varchar(40)"`
-	Method 		string		`xorm:"mMethod varchar(40)"`
-	Proto 		string		`xorm:"proto varchar(40)"`
-	UserAgent 	string		`xorm:"userAgent varchar(200)"`
-	InsertTime 	string		`xorm:"inserttime varchar(20)"`
-}

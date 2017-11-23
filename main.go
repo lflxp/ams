@@ -8,6 +8,11 @@ import (
 )
 
 func main() {
+	//设置session
+	beego.BConfig.WebConfig.Session.SessionOn = true
+	beego.BConfig.WebConfig.Session.SessionGCMaxLifetime = 7 * 24 * 3600
+	beego.BConfig.WebConfig.Session.SessionCookieLifeTime = 7 * 24 * 3600
+	//修改模板关键字
 	beego.BConfig.WebConfig.TemplateLeft = "<<"
 	beego.BConfig.WebConfig.TemplateRight = ">>"
 	beego.Run()

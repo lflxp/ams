@@ -2,40 +2,46 @@ package controllers
 
 import (
 	"strings"
-	"time"
+	// "time"
 	"github.com/astaxie/beego"
 	"github.com/lflxp/dbui/etcd"
 	"github.com/lflxp/ams/utils/cmdb"
 	. "github.com/lflxp/ams/models"
 	"github.com/lflxp/ams/utils/tool"
 	. "github.com/lflxp/ams/utils/db"
-	"github.com/lflxp/ams/utils/cache"
+	// "github.com/lflxp/ams/utils/cache"
 )
 
 type MainController struct {
 	beego.Controller
 }
 
-func (this *MainController) Prepare() {
-	//记录访问日志
-	beegoSessionId := this.Ctx.GetCookie("beegosessionID")
-	username, isExist := cache.Cached.Get(beegoSessionId)
-	history := new(LoginHistory)
-	history.InsertTime = time.Now().Format("2006-01-02 15:04:05")
-	if isExist {
-		history.Username = username.(string)
-	} else {
-		history.Username = "未登陆用户"
-	}
-	history.Referer = this.Ctx.Request.Referer()
-	history.RemoteAddr = this.Ctx.Request.RemoteAddr
-	history.RequestURI = this.Ctx.Request.RequestURI
-	history.Host = this.Ctx.Request.Host
-	history.Method = this.Ctx.Request.Method
-	history.Proto = this.Ctx.Request.Proto
-	history.UserAgent = this.Ctx.Request.UserAgent()
-	Db.Engine.Insert(history)
-}
+// func (this *MainController) Prepare() {
+// 	//记录访问日志
+// 	this.EnableXSRF = false
+// 	beegoSessionId := this.Ctx.GetCookie("beegosessionID")
+// 	if _, isExist := cache.Cached.Get(beegoSessionId); isExist == false {
+// 		this.Ctx.Redirect(301, "/login/login")
+// 		return
+// 	}
+// 	//记录访问日志
+// 	username, isExist := cache.Cached.Get(beegoSessionId)
+// 	history := new(LoginHistory)
+// 	history.InsertTime = time.Now().Format("2006-01-02 15:04:05")
+// 	if isExist {
+// 		history.Username = username.(string)
+// 	} else {
+// 		history.Username = "未登陆用户"
+// 	}
+// 	history.Referer = this.Ctx.Request.Referer()
+// 	history.RemoteAddr = this.Ctx.Request.RemoteAddr
+// 	history.RequestURI = this.Ctx.Request.RequestURI
+// 	history.Host = this.Ctx.Request.Host
+// 	history.Method = this.Ctx.Request.Method
+// 	history.Proto = this.Ctx.Request.Proto
+// 	history.UserAgent = this.Ctx.Request.UserAgent()
+// 	Db.Engine.Insert(history)	
+// }
 
 func (this *MainController) Get() {
 	this.TplName = "main/main.html"

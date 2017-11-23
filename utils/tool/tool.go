@@ -5,7 +5,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"io/ioutil"
 	"net"
+	"crypto/md5"
 	"net/http"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -144,4 +146,10 @@ func Check(e error) {
 	if e != nil {
 		panic(e)
 	}
+}
+
+func JiaMi(str string) string {
+	data := []byte(str)
+	has := md5.Sum(data)
+	return fmt.Sprintf("%x", has)
 }

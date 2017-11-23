@@ -7,6 +7,12 @@ Automatic monitoring system
 
 > /ams/main/index/
 
+```
+/ams  介绍:ams项目配置主路径
+/ams/main  介绍:主页配置路径
+/ams/main/index 介绍:主页网站跳转配置
+```
+
 ## 页面模块（key）
 
 以配置管理为例,以模块名作为key：

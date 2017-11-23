@@ -1,0 +1,79 @@
+<div class="col-xs-12">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h4 class="widget-title">操作历史</h4>
+
+                    <div class="widget-toolbar">
+                        <a href="#" data-action="collapse">
+                            <i class="ace-icon fa fa-chevron-up"></i>
+                        </a>
+
+                        <a href="#" data-action="close">
+                            <i class="ace-icon fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <div class="row">
+                            <!-- Modal -->
+                            <div class="col-xs-12 col-sm-12">
+                                <div id="toolbar1">
+                                    <button class="btn btn-danger btn-xs" id="remove" disabled>
+                                        <i class="glyphicon glyphicon-refresh"></i> 删除
+                                    </button>
+                                </div>
+                                <table id="tabled1"
+                                       data-toggle="table"
+                                       data-search="true"
+                                       data-toolbar="#toolbar1"
+                                       data-show-pagination-switch="false"
+                                       data-detail-view="false"
+                                       data-detail-formatter="detailFormatter"
+                                       data-minimum-count-columns="2"
+                                       data-pagination="true"
+                                       data-page-size="10"
+                                       data-id-field="id"
+                                       data-page-list="[10, 25, 50, 100, ALL]"
+                                       data-show-footer="false"
+                                       data-side-pagination="client"
+                                       data-row-style="rowStyle"
+                                       data-pagination-first-text="首页"
+                                       data-pagination-pre-text="上一页"
+                                       data-pagination-next-text="下一页"
+                                       data-pagination-last-text="最后一页" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="state" data-checkbox="true">状态</th>
+                                            <th data-field="id" data-visible="true">ID</th>
+                                            <th data-field="email" data-visible="true" data-editable="true">Email</th>
+                                            <th data-field="username" data-align="center" data-visible="true" data-editable="true">用户名</th>
+                                            <th data-field="password" data-align="center" data-visible="true" data-editable="true">密码</th>
+                                            <th data-field="common" data-align="center" data-visible="true" data-editable="true">备注</th>
+                                        </tr>
+                                    </thead>
+                                    <<range .Result>>
+                                        <tr>
+                                            <td></td>
+                                            <td><<.Id>></td>
+                                            <td><<.Email>></td>
+                                            <td><<.Username>></td>
+                                            <td><<.Password>></td>
+                                            <td><<.Common>></td>
+                                        </tr>
+                                    <<end>>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.span -->
+    </div>
+</div>
+        <!-- <td><button onclick="CheckRsyslog('<<.Sn>>')">点击查看</button></td> -->
+
