@@ -54,10 +54,12 @@ func (this *EasyInstallController) Login() {
 			this.Ctx.Input.Bind(&username, "username")
 			this.Ctx.Input.Bind(&password, "password")
 			this.Ctx.Input.Bind(&password2, "password2")
+			beego.Critical(email, username, password, password2)
 			if email != "169471087@qq.com" {
 				this.Ctx.Redirect(301, "/login/login")
 				return
 			}
+			
 			user := new(LoginUser)
 			has, err := Db.Engine.Where("email = ? and username = ?", email, username).Get(user)
 			if err != nil {
@@ -71,6 +73,7 @@ func (this *EasyInstallController) Login() {
 				return
 			}
 			if password == password2 {
+				user.Id = time.Now().Unix()
 				user.Email = email
 				user.Username = username
 				user.Password = tool.JiaMi(password)

@@ -44,7 +44,7 @@ func init() {
 	Db.Engine.SetTableMapper(tbMapper)
 	Db.Engine.SetColumnMapper(core.SameMapper{})
 
-	err := Db.Engine.Sync2(new(ServiceConfig),new(Service),new(CmdbTree),new(LoginHistory))
+	err := Db.Engine.Sync2(new(ServiceConfig),new(Service),new(CmdbTree),new(LoginHistory),new(LoginUser),new(CmdbTree))
 	Check(err)
 
 	//err = Db.Engine.Sync2(new(Userinfo),new(Groups),new(Permissions))

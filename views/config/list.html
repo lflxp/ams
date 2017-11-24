@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,6 +8,10 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>  
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>     
    <!--<script src="/static/js/select2.js"></script>-->
+   <link rel="stylesheet" href="/static/css/bootstrap-table.css"/>
+   <link rel="stylesheet" href="/static/css/bootstrap-editable.css" />
+   <link rel="stylesheet" href="/static/css/bootstrapValidator.min.css" />
+   <link rel="stylesheet" href="/static/assets/css/bootstrap-datepicker3.min.css" />
     <style type="text/css">
         body {
             padding-top: 70px;
@@ -68,17 +71,148 @@
     <div class="row">
         <!-- start 9 -->
         <div class="col-md-9">
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane fade " id="home">
+                    <p>菜鸟教程是一个提供最新的web技术站点，本站免费提供了建站相关的技术文档，帮助广大web技术爱好者快速入门并建立自己的网站。菜鸟先飞早入行——学的不仅是技术，更是梦想。</p>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div id="toolbar1">
+                                <button class="btn btn-danger btn-xs" id="remove" disabled>
+                                    <i class="glyphicon glyphicon-refresh"></i> 删除
+                                </button>
+                            </div>
+                            <table id="tabled1"
+                                    data-toggle="table"
+                                    data-search="true"
+                                    data-toolbar="#toolbar1"
+                                    data-show-pagination-switch="false"
+                                    data-detail-view="false"
+                                    data-detail-formatter="detailFormatter"
+                                    data-minimum-count-columns="2"
+                                    data-pagination="true"
+                                    data-page-size="10"
+                                    data-id-field="id"
+                                    data-page-list="[10, 25, 50, 100, ALL]"
+                                    data-url="/admin/gethistory"
+                                    data-show-footer="false"
+                                    data-side-pagination="server"
+                                    data-row-style="rowStyle"
+                                    data-pagination-first-text="首页"
+                                    data-pagination-pre-text="上一页"
+                                    data-pagination-next-text="下一页"
+                                    data-pagination-last-text="最后一页" class="table">
+                                <thead>
+                                    <tr>
+                                        <th data-field="state" data-checkbox="true">状态</th>
+                                        <th data-field="id" data-visible="true">ID</th>
+                                        <th data-field="username" data-visible="true" data-editable="false">Username</th>
+                                        <th data-field="referer" data-align="center" data-visible="true" data-editable="false">Referer</th>
+                                        <th data-field="remoteaddr" data-align="center" data-visible="true" data-editable="false">RemoteAddr</th>
+                                        <th data-field="requesturi" data-align="center" data-visible="true" data-editable="false">RequestURI</th>
+                                        <th data-field="host" data-align="center" data-visible="true" data-editable="false">Host</th>
+                                        <th data-field="method" data-align="center" data-visible="true" data-editable="false">Method</th>
+                                        <th data-field="proto" data-align="center" data-visible="true" data-editable="false">Proto</th>
+                                        <th data-field="useragent" data-align="center" data-visible="true" data-editable="false">UserAgent</th>
+                                        <th data-field="inserttime" data-align="center" data-visible="true" data-editable="false">InsertTime</th>
+                                    </tr>
+                                </thead>
+
+                            </table>
+                        </div> 
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="ios">
+                    <p>iOS 是一个由苹果公司开发和发布的手机操作系统。最初是于 2007 年首次发布 iPhone、iPod Touch 和 Apple 
+                        TV。iOS 派生自 OS X，它们共享 Darwin 基础。OS X 操作系统是用在苹果电脑上，iOS 是苹果的移动版本。</p>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="widget-box">
+                                <div class="widget-header">
+                                    <h4 class="widget-title">操作历史</h4>
                 
+                                    <div class="widget-toolbar">
+                                        <a href="#" data-action="collapse">
+                                            <i class="ace-icon fa fa-chevron-up"></i>
+                                        </a>
+                
+                                        <a href="#" data-action="close">
+                                            <i class="ace-icon fa fa-times"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <div class="row">
+                                            <!-- Modal -->
+                                            <div class="col-xs-12 col-sm-12">
+                                                <div id="toolbar1">
+                                                    <button class="btn btn-danger btn-xs" id="remove" disabled>
+                                                        <i class="glyphicon glyphicon-refresh"></i> 删除
+                                                    </button>
+                                                </div>
+                                                <table id="tabled1"
+                                                        data-toggle="table"
+                                                        data-search="true"
+                                                        data-toolbar="#toolbar1"
+                                                        data-show-pagination-switch="false"
+                                                        data-detail-view="false"
+                                                        data-detail-formatter="detailFormatter"
+                                                        data-minimum-count-columns="2"
+                                                        data-pagination="true"
+                                                        data-page-size="10"
+                                                        data-id-field="id"
+                                                        data-page-list="[10, 25, 50, 100, ALL]"
+                                                        data-show-footer="false"
+                                                        data-side-pagination="client"
+                                                        data-row-style="rowStyle"
+                                                        data-pagination-first-text="首页"
+                                                        data-pagination-pre-text="上一页"
+                                                        data-pagination-next-text="下一页"
+                                                        data-pagination-last-text="最后一页" class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th data-field="state" data-checkbox="true">状态</th>
+                                                            <th data-field="id" data-visible="true">ID</th>
+                                                            <th data-field="email" data-visible="true" data-editable="true">Email</th>
+                                                            <th data-field="username" data-align="center" data-visible="true" data-editable="true">用户名</th>
+                                                            <th data-field="password" data-align="center" data-visible="true" data-editable="true">密码</th>
+                                                            <th data-field="common" data-align="center" data-visible="true" data-editable="true">备注</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <<range .Result>>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td><<.Id>></td>
+                                                            <td><<.Email>></td>
+                                                            <td><<.Username>></td>
+                                                            <td><<.Password>></td>
+                                                            <td><<.Common>></td>
+                                                        </tr>
+                                                    <<end>>
+                                                </table>
+                                            </div>
+                                        </div>
+                
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.span -->
+                    </div>    
+                </div>
+                <div class="tab-pane fade" id="jmeter">
+                    <p>jMeter 是一款开源的测试软件。它是 100% 纯 Java 应用程序，用于负载和性能测试。</p>
+                </div>
+                <div class="tab-pane fade" id="ejb">
+                    <p>Enterprise Java Beans（EJB）是一个创建高度可扩展性和强大企业级应用程序的开发架构，部署在兼容应用程序服务器（比如 JBOSS、Web Logic 等）的 J2EE 上。
+                    </p>
+                </div>
+            </div> 
         <!-- end 9 -->    
         </div>
         <!-- start 3-->
         <div class="col-md-3">
 
-            <ul class="nav nav-pills" role="tablist">
-                <li role="presentation" class="active"><a href="#">Home <span class="badge">42</span></a></li>
-                <li role="presentation"><a href="#">Profile</a></li>
-                <li role="presentation"><a href="#">Messages <span class="badge">3</span></a></li>
-            </ul>    
             <ul class="list-group">
                 <li class="list-group-item">
                     <span class="badge">14</span>
@@ -107,9 +241,8 @@
                 
                 <!-- List group -->
                 <ul class="list-group">
-                    <li class="list-group-item"><span class="glyphicon glyphicon-star" aria-hidden="true"></span><a href="#" > Cras justo odio</a><span class="badge">42</span></li>
-                    <li class="list-group-item"><a href="#" class="list-group-item">Dapibus ac facilisis in</a></li>
-                    <li class="list-group-item">Morbi leo risus</li>
+                    <li class="list-group-item"><span class="glyphicon glyphicon-star" aria-hidden="true"></span><a href="#ios" data-toggle="tab" > Cras justo odio</a><span class="badge">42</span></li>
+                    <li class="list-group-item"><a href="#home" data-toggle="tab">菜鸟教程</a></li>
                     <li class="list-group-item">Porta ac consectetur ac</li>
                     <li class="list-group-item">Vestibulum at eros</li>
                 </ul>
@@ -121,112 +254,7 @@
                 <a href="#" class="list-group-item">Porta ac consectetur ac</a>
                 <a href="#" class="list-group-item">Vestibulum at eros</a>
             </div>
-            <div class="list-group">
-                <button type="button" class="list-group-item">Cras justo odio</button>
-                <button type="button" class="list-group-item">Dapibus ac facilisis in</button>
-                <button type="button" class="list-group-item">Morbi leo risus</button>
-                <button type="button" class="list-group-item">Porta ac consectetur ac</button>
-                <button type="button" class="list-group-item">Vestibulum at eros</button>
-            </div>
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-success">Dapibus ac facilisis in</li>
-                <li class="list-group-item list-group-item-info">Cras sit amet nibh libero</li>
-                <li class="list-group-item list-group-item-warning">Porta ac consectetur ac</li>
-                <li class="list-group-item list-group-item-danger">Vestibulum at eros</li>
-            </ul>
-            <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-success">Dapibus ac facilisis in</a>
-                <a href="#" class="list-group-item list-group-item-info">Cras sit amet nibh libero</a>
-                <a href="#" class="list-group-item list-group-item-warning">Porta ac consectetur ac</a>
-                <a href="#" class="list-group-item list-group-item-danger">Vestibulum at eros</a>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">Panel heading without title</div>
-                <div class="panel-body">
-                    Panel content
-                </div>
-            </div>
-                
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Panel title</h3>
-                </div>
-            <div class="panel-body">
-                    Panel content
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <!-- Default panel contents -->
-                <div class="panel-heading">Panel heading</div>
-                <div class="panel-body">
-                    <p>...</p>
-                </div>
-                
-                <!-- Table -->
-                <table class="table">
-                    ...
-                </table>
-            </div>
-            <div class="panel panel-default">
-                    <!-- Default panel contents -->
-                <div class="panel-heading">Panel heading</div>
-                <div class="panel-body">
-                    <p>...</p>
-                </div>
-                
-                <!-- List group -->
-                <ul class="list-group">
-                    <li class="list-group-item">Cras justo odio</li>
-                    <li class="list-group-item">Dapibus ac facilisis in</li>
-                    <li class="list-group-item">Morbi leo risus</li>
-                    <li class="list-group-item">Porta ac consectetur ac</li>
-                    <li class="list-group-item">Vestibulum at eros</li>
-                </ul>
-            </div>
-            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingOne">
-                    <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Collapsible Group Item #1
-                        </a>
-                    </h4>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                    <div class="panel-body">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                    </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingTwo">
-                    <h4 class="panel-title">
-                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        Collapsible Group Item #2
-                        </a>
-                    </h4>
-                    </div>
-                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-                    <div class="panel-body">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                    </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="headingThree">
-                    <h4 class="panel-title">
-                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        Collapsible Group Item #3
-                        </a>
-                    </h4>
-                    </div>
-                    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-                    <div class="panel-body">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                    </div>
-                    </div>
-                </div>
-            </div> 
+           
         <!-- end 3 -->    
         </div>
         <!-- start 9 -->
@@ -235,5 +263,196 @@
         <!-- end 9 -->    
         <!-- </div> -->
     </div>
+    <script src="/static/js/bootstrap-table.js"></script>
+    <script src="/static/js/bootstrap-editable.js"></script>
+    <script src="/static/js/bootstrapValidator.min.js"></script>
+    <script src="/static/js/bootstrap-table-editable.js"></script>
+    <script src="/static/js/bootstrap-table-export.js"></script>
+    <script src="/static/assets/js/bootstrap-datepicker.min.js"></script>
+    <script src="/static/js/tableExport.js"></script>
+    
+    <script language="JavaScript">
+            var ajax = $.ajax;
+            $.extend({
+                ajax: function(url, options) {
+                    if (typeof url === 'object') {
+                        options = url;
+                        url = undefined;
+                    }
+                    options = options || {};
+                    url = options.url;
+                    var xsrftoken = $('meta[name=_xsrf]').attr('content');
+                    var headers = options.headers || {};
+                    var domain = document.domain.replace(/\./ig, '\\.');
+                    if (!/^(http:|https:).*/.test(url) || eval('/^(http:|https:)\\/\\/(.+\\.)*' + domain + '.*/').test(url)) {
+                        headers = $.extend(headers, {'X-Xsrftoken':xsrftoken});
+                    }
+                    options.headers = headers;
+                    return ajax(url, options);
+                }
+            });
+            $.fn.editable.defaults.url = "/admin/userchange";
+            function Check(id) {
+                window.open("http://"+window.location.host+"/loan/debx?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Add() {
+                window.open("http://www.baidu.com/","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function CheckRsyslog(id) {
+                window.open("http://install.qiyi.domain/install/api/v1/rsyslog?hostname="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Checkflow(id) {
+                window.open("http://"+window.location.host+"/init/history?flow=1&sn="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Checklog(id) {
+                window.open("http://"+window.location.host+"/init/history?log=1&sn="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Check2() {
+                window.open("http://"+window.location.host+"/ansible/id2","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Update(id) {
+                window.open("http://"+window.location.host+"/ansible/update?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Update2(id) {
+                window.open("http://"+window.location.host+"/ansible/update2?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+    
+            function detailFormatter(index, row) {
+                var html = [];
+                $.each(row, function (key, value) {
+                    html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+                });
+                return html.join('');
+            }
+            var $table = $('#tabled1'),
+                $remove = $('#remove'),
+                selections = [];
+    
+            function getIdSelections() {
+                return $.map($table.bootstrapTable('getSelections'), function (row) {
+                    return row.id
+                });
+            }
+    
+            $table.on('check.bs.table uncheck.bs.table ' +
+                    'check-all.bs.table uncheck-all.bs.table', function () {
+                $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
+                // save your data, here just save the current page
+                selections = getIdSelections();
+                // push or splice the selections if you want to save all data selections
+            });
+            $remove.click(function () {
+                var r = confirm("确定删除吗？")
+                if(r==true){
+                    var ids = getIdSelections();
+                    $.ajax({
+                        url:'/admin/userdel?ids='+ids.join(),
+                        type:'Post',
+                        success:function (data) {
+                            alert(data);
+                            $table.bootstrapTable('remove', {
+                                field: 'id',
+                                values: ids
+                            });
+                        }
+                    })
+                    $remove.prop('disabled', true);
+                }
+    
+            });
+    
+    </script>
+
+    <script language="JavaScript">
+        var ajax = $.ajax;
+        $.extend({
+            ajax: function(url, options) {
+                if (typeof url === 'object') {
+                    options = url;
+                    url = undefined;
+                }
+                options = options || {};
+                url = options.url;
+                var xsrftoken = $('meta[name=_xsrf]').attr('content');
+                var headers = options.headers || {};
+                var domain = document.domain.replace(/\./ig, '\\.');
+                if (!/^(http:|https:).*/.test(url) || eval('/^(http:|https:)\\/\\/(.+\\.)*' + domain + '.*/').test(url)) {
+                    headers = $.extend(headers, {'X-Xsrftoken':xsrftoken});
+                }
+                options.headers = headers;
+                return ajax(url, options);
+            }
+        });
+        $.fn.editable.defaults.url = "/admin/userchange";
+        function Check(id) {
+            window.open("http://"+window.location.host+"/loan/debx?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+        }
+        function Add() {
+            window.open("http://www.baidu.com/","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+        }
+        function CheckRsyslog(id) {
+            window.open("http://install.qiyi.domain/install/api/v1/rsyslog?hostname="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+        }
+        function Checkflow(id) {
+            window.open("http://"+window.location.host+"/init/history?flow=1&sn="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+        }
+        function Checklog(id) {
+            window.open("http://"+window.location.host+"/init/history?log=1&sn="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+        }
+        function Check2() {
+            window.open("http://"+window.location.host+"/ansible/id2","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+        }
+        function Update(id) {
+            window.open("http://"+window.location.host+"/ansible/update?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+        }
+        function Update2(id) {
+            window.open("http://"+window.location.host+"/ansible/update2?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+        }
+
+        function detailFormatter(index, row) {
+            var html = [];
+            $.each(row, function (key, value) {
+                html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+            });
+            return html.join('');
+        }
+        var $table = $('#tabled1'),
+            $remove = $('#remove'),
+            selections = [];
+
+        function getIdSelections() {
+            return $.map($table.bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        $table.on('check.bs.table uncheck.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+            $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
+            // save your data, here just save the current page
+            selections = getIdSelections();
+            // push or splice the selections if you want to save all data selections
+        });
+        $remove.click(function () {
+            var r = confirm("确定删除吗？")
+            if(r==true){
+                var ids = getIdSelections();
+                $.ajax({
+                    url:'/admin/userdel?ids='+ids.join(),
+                    type:'Post',
+                    success:function (data) {
+                        alert(data);
+                        $table.bootstrapTable('remove', {
+                            field: 'id',
+                            values: ids
+                        });
+                    }
+                })
+                $remove.prop('disabled', true);
+            }
+
+        });
+
+    </script>
 </body>
 </html>

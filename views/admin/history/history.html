@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title><<.Title>></title>
+    
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>  
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>  
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>     
+   <!--<script src="/static/js/select2.js"></script>-->
+    <link rel="stylesheet" href="/static/css/bootstrap-table.css"/>
+    <link rel="stylesheet" href="/static/css/bootstrap-editable.css" />
+    <link rel="stylesheet" href="/static/css/bootstrapValidator.min.css" />
+    <link rel="stylesheet" href="/static/assets/css/bootstrap-datepicker3.min.css" />
+    <style type="text/css">
+        body {
+            padding-top: 70px;
+            padding-left: 20px;
+            padding-right: 20px;
+            /*padding-bottom: 70px;*/
+        }
+    </style>
+
+    <style type="text/css">
+        .dropdown-submenu {
+            position: relative;
+        }
+        .dropdown-submenu > .dropdown-menu {
+            top: 0;
+            left: 100%;
+            margin-top: -6px;
+            margin-left: -1px;
+            -webkit-border-radius: 0 6px 6px 6px;
+            -moz-border-radius: 0 6px 6px;
+            border-radius: 0 6px 6px 6px;
+        }
+        .dropdown-submenu:hover > .dropdown-menu {
+            display: block;
+        }
+        .dropdown-submenu > a:after {
+            display: block;
+            content: " ";
+            float: right;
+            width: 0;
+            height: 0;
+            border-color: transparent;
+            border-style: solid;
+            border-width: 5px 0 5px 5px;
+            border-left-color: #ccc;
+            margin-top: 5px;
+            margin-right: -10px;
+        }
+        .dropdown-submenu:hover > a:after {
+            border-left-color: #fff;
+        }
+        .dropdown-submenu.pull-left {
+            float: none;
+        }
+        .dropdown-submenu.pull-left > .dropdown-menu {
+            left: -100%;
+            margin-left: 10px;
+            -webkit-border-radius: 6px 0 6px 6px;
+            -moz-border-radius: 6px 0 6px 6px;
+            border-radius: 6px 0 6px 6px;
+        }
+    </style>
+</head>
+<body>
+    <!-- <<template "template/loading.html" .>>        -->
+    <<template "template/top.html" .>>       
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h4 class="widget-title">操作历史</h4>
+    
+                        <div class="widget-toolbar">
+                            <a href="#" data-action="collapse">
+                                <i class="ace-icon fa fa-chevron-up"></i>
+                            </a>
+    
+                            <a href="#" data-action="close">
+                                <i class="ace-icon fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+    
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div class="row">
+                                <!-- Modal -->
+                                <div class="col-xs-12 col-sm-12">
+                                    <div id="toolbar1">
+                                        <button class="btn btn-danger btn-xs" id="remove" disabled>
+                                            <i class="glyphicon glyphicon-refresh"></i> 删除
+                                        </button>
+                                    </div>
+                                    <table id="tabled1"
+                                            data-toggle="table"
+                                            data-search="true"
+                                            data-toolbar="#toolbar1"
+                                            data-show-pagination-switch="false"
+                                            data-detail-view="false"
+                                            data-detail-formatter="detailFormatter"
+                                            data-minimum-count-columns="2"
+                                            data-pagination="true"
+                                            data-page-size="10"
+                                            data-id-field="id"
+                                            data-page-list="[10, 25, 50, 100, ALL]"
+                                            data-url="/admin/gethistory"
+                                            data-show-footer="false"
+                                            data-side-pagination="server"
+                                            data-row-style="rowStyle"
+                                            data-pagination-first-text="首页"
+                                            data-pagination-pre-text="上一页"
+                                            data-pagination-next-text="下一页"
+                                            data-pagination-last-text="最后一页" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th data-field="state" data-checkbox="true">状态</th>
+                                                <th data-field="id" data-visible="true">ID</th>
+                                                <th data-field="username" data-visible="true" data-editable="false">Username</th>
+                                                <th data-field="referer" data-align="center" data-visible="true" data-editable="false">Referer</th>
+                                                <th data-field="remoteaddr" data-align="center" data-visible="true" data-editable="false">RemoteAddr</th>
+                                                <th data-field="requesturi" data-align="center" data-visible="true" data-editable="false">RequestURI</th>
+                                                <th data-field="host" data-align="center" data-visible="true" data-editable="false">Host</th>
+                                                <th data-field="method" data-align="center" data-visible="true" data-editable="false">Method</th>
+                                                <th data-field="proto" data-align="center" data-visible="true" data-editable="false">Proto</th>
+                                                <th data-field="useragent" data-align="center" data-visible="true" data-editable="false">UserAgent</th>
+                                                <th data-field="inserttime" data-align="center" data-visible="true" data-editable="false">InsertTime</th>
+                                            </tr>
+                                        </thead>
+    
+                                    </table>
+                                </div>
+                            </div>
+    
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.span -->
+        </div>
+    </div>
+    <script src="/static/js/bootstrap-table.js"></script>
+    <script src="/static/js/bootstrap-editable.js"></script>
+    <script src="/static/js/bootstrapValidator.min.js"></script>
+    <script src="/static/js/bootstrap-table-editable.js"></script>
+    <script src="/static/js/bootstrap-table-export.js"></script>
+    <script src="/static/assets/js/bootstrap-datepicker.min.js"></script>
+    <script src="/static/js/tableExport.js"></script>
+    
+    <script language="JavaScript">
+            var ajax = $.ajax;
+            $.extend({
+                ajax: function(url, options) {
+                    if (typeof url === 'object') {
+                        options = url;
+                        url = undefined;
+                    }
+                    options = options || {};
+                    url = options.url;
+                    var xsrftoken = $('meta[name=_xsrf]').attr('content');
+                    var headers = options.headers || {};
+                    var domain = document.domain.replace(/\./ig, '\\.');
+                    if (!/^(http:|https:).*/.test(url) || eval('/^(http:|https:)\\/\\/(.+\\.)*' + domain + '.*/').test(url)) {
+                        headers = $.extend(headers, {'X-Xsrftoken':xsrftoken});
+                    }
+                    options.headers = headers;
+                    return ajax(url, options);
+                }
+            });
+            $.fn.editable.defaults.url = "/admin/userchange";
+            function Check(id) {
+                window.open("http://"+window.location.host+"/loan/debx?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Add() {
+                window.open("http://www.baidu.com/","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function CheckRsyslog(id) {
+                window.open("http://install.qiyi.domain/install/api/v1/rsyslog?hostname="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Checkflow(id) {
+                window.open("http://"+window.location.host+"/init/history?flow=1&sn="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Checklog(id) {
+                window.open("http://"+window.location.host+"/init/history?log=1&sn="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Check2() {
+                window.open("http://"+window.location.host+"/ansible/id2","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Update(id) {
+                window.open("http://"+window.location.host+"/ansible/update?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Update2(id) {
+                window.open("http://"+window.location.host+"/ansible/update2?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            //datepicker plugin
+            //link
+    
+            function detailFormatter(index, row) {
+                var html = [];
+                $.each(row, function (key, value) {
+                    html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+                });
+                return html.join('');
+            }
+            var $table = $('#tabled1'),
+                $remove = $('#remove'),
+                selections = [];
+    
+            function getIdSelections() {
+                return $.map($table.bootstrapTable('getSelections'), function (row) {
+                    return row.id
+                });
+            }
+    
+            $table.on('check.bs.table uncheck.bs.table ' +
+                    'check-all.bs.table uncheck-all.bs.table', function () {
+                $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
+                // save your data, here just save the current page
+                selections = getIdSelections();
+                // push or splice the selections if you want to save all data selections
+            });
+            $remove.click(function () {
+                var r = confirm("确定删除吗？")
+                if(r==true){
+                    var ids = getIdSelections();
+                    $.ajax({
+                        url:'/admin/historydel?ids='+ids.join(),
+                        type:'Post',
+                        success:function (data) {
+                            alert(data);
+                            $table.bootstrapTable('remove', {
+                                field: 'id',
+                                values: ids
+                            });
+                        }
+                    })
+                    $remove.prop('disabled', true);
+                }
+    
+            });
+    
+    </script>
+            
+</body>
+</html>

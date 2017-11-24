@@ -2,46 +2,47 @@ package controllers
 
 import (
 	"strings"
-	// "time"
+	"time"
 	"github.com/astaxie/beego"
 	"github.com/lflxp/dbui/etcd"
 	"github.com/lflxp/ams/utils/cmdb"
 	. "github.com/lflxp/ams/models"
 	"github.com/lflxp/ams/utils/tool"
 	. "github.com/lflxp/ams/utils/db"
-	// "github.com/lflxp/ams/utils/cache"
+	"github.com/lflxp/ams/utils/cache"
+	"github.com/lflxp/ams/utils/pag"
 )
 
 type MainController struct {
 	beego.Controller
 }
 
-// func (this *MainController) Prepare() {
-// 	//记录访问日志
-// 	this.EnableXSRF = false
-// 	beegoSessionId := this.Ctx.GetCookie("beegosessionID")
-// 	if _, isExist := cache.Cached.Get(beegoSessionId); isExist == false {
-// 		this.Ctx.Redirect(301, "/login/login")
-// 		return
-// 	}
-// 	//记录访问日志
-// 	username, isExist := cache.Cached.Get(beegoSessionId)
-// 	history := new(LoginHistory)
-// 	history.InsertTime = time.Now().Format("2006-01-02 15:04:05")
-// 	if isExist {
-// 		history.Username = username.(string)
-// 	} else {
-// 		history.Username = "未登陆用户"
-// 	}
-// 	history.Referer = this.Ctx.Request.Referer()
-// 	history.RemoteAddr = this.Ctx.Request.RemoteAddr
-// 	history.RequestURI = this.Ctx.Request.RequestURI
-// 	history.Host = this.Ctx.Request.Host
-// 	history.Method = this.Ctx.Request.Method
-// 	history.Proto = this.Ctx.Request.Proto
-// 	history.UserAgent = this.Ctx.Request.UserAgent()
-// 	Db.Engine.Insert(history)	
-// }
+func (this *MainController) Prepare() {
+	//记录访问日志
+	this.EnableXSRF = false
+	beegoSessionId := this.Ctx.GetCookie("beegosessionID")
+	if _, isExist := cache.Cached.Get(beegoSessionId); isExist == false {
+		this.Ctx.Redirect(301, "/login/login")
+		return
+	}
+	//记录访问日志
+	username, isExist := cache.Cached.Get(beegoSessionId)
+	history := new(LoginHistory)
+	history.InsertTime = time.Now().Format("2006-01-02 15:04:05")
+	if isExist {
+		history.Username = username.(string)
+	} else {
+		history.Username = "未登陆用户"
+	}
+	history.Referer = this.Ctx.Request.Referer()
+	history.RemoteAddr = this.Ctx.Request.RemoteAddr
+	history.RequestURI = this.Ctx.Request.RequestURI
+	history.Host = this.Ctx.Request.Host
+	history.Method = this.Ctx.Request.Method
+	history.Proto = this.Ctx.Request.Proto
+	history.UserAgent = this.Ctx.Request.UserAgent()
+	Db.Engine.Insert(history)	
+}
 
 func (this *MainController) Get() {
 	this.TplName = "main/main.html"
@@ -88,6 +89,33 @@ func (this *MainController) Config() {
 	this.Data["Title"] = "配置管理"
 	this.Data["Config"] = "class='active'"
 	this.TplName = "config/config.html"
+}
+
+func (this *MainController) Admin() {
+	types := this.Ctx.Input.Param(":type")
+	if this.Ctx.Request.Method == "GET" {
+		if types == "useradd" {
+			result := make([]LoginUser, 0)
+			err := Db.Engine.Find(&result)
+			if err != nil {
+				this.Ctx.WriteString(err.Error())
+			}
+			this.Data["Result"] = result
+			this.TplName = "admin/user/user.html"	
+		} else if types == "history" {
+			this.Data["Brand"] = "后台管理" //top.html 主题显示
+			this.TplName = "admin/history/history.html"
+		} else if types == "gethistory" {
+			var order string
+			var offset, limit int
+			this.Ctx.Input.Bind(&order, "order")
+			this.Ctx.Input.Bind(&offset, "offset")
+			this.Ctx.Input.Bind(&limit, "limit")
+
+			this.Data["json"] = pag.HistoryPagintor(order, offset, limit)
+			this.ServeJSON()
+		}
+	}	
 }
 
 func (this *MainController) Options() {

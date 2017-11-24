@@ -14,4 +14,5 @@ func init() {
     beego.Router("/config", &controllers.MainController{},"get,post:Config")
     beego.Router("/list", &controllers.MainController{},"get,post:List")
     beego.Router("/options/?:type", &controllers.MainController{},"get,post:Options")
+    beego.Router("/admin/?:type", &controllers.MainController{},"get,post:Admin")
 }
