@@ -22,15 +22,15 @@
                         <div class="widget-main">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12">
-                                    <div id="toolbar1">
-                                        <button class="btn btn-danger btn-xs" id="remove" disabled>
+                                    <div id="toolbar2">
+                                        <button class="btn btn-danger btn-xs" id="remove2" disabled>
                                             <i class="glyphicon glyphicon-refresh"></i> 删除
                                         </button>
                                     </div>
                                     <table id="tabled2"
                                             data-toggle="table"
                                             data-search="true"
-                                            data-toolbar="#toolbar1"
+                                            data-toolbar="#toolbar2"
                                             data-show-pagination-switch="false"
                                             data-detail-view="false"
                                             data-detail-formatter="detailFormatter"
@@ -163,7 +163,7 @@
                         type:'Post',
                         success:function (data) {
                             alert(data);
-                            $table.bootstrapTable('remove', {
+                            $table.bootstrapTable('remove2', {
                                 field: 'id',
                                 values: ids
                             });
