@@ -1,0 +1,177 @@
+<div class="tab-pane fade" id="ios" role="tabpanel">
+        <p>iOS 是一个由苹果公司开发和发布的手机操作系统。最初是于 2007 年首次发布 iPhone、iPod Touch 和 Apple 
+            TV。iOS 派生自 OS X，它们共享 Darwin 基础。OS X 操作系统是用在苹果电脑上，iOS 是苹果的移动版本。</p>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h4 class="widget-title">操作历史</h4>
+    
+                        <div class="widget-toolbar">
+                            <a href="#" data-action="collapse">
+                                <i class="ace-icon fa fa-chevron-up"></i>
+                            </a>
+    
+                            <a href="#" data-action="close">
+                                <i class="ace-icon fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+    
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div id="toolbar1">
+                                        <button class="btn btn-danger btn-xs" id="remove" disabled>
+                                            <i class="glyphicon glyphicon-refresh"></i> 删除
+                                        </button>
+                                    </div>
+                                    <table id="tabled2"
+                                            data-toggle="table"
+                                            data-search="true"
+                                            data-toolbar="#toolbar1"
+                                            data-show-pagination-switch="false"
+                                            data-detail-view="false"
+                                            data-detail-formatter="detailFormatter"
+                                            data-minimum-count-columns="2"
+                                            data-pagination="true"
+                                            data-page-size="10"
+                                            data-id-field="id"
+                                            data-page-list="[10, 25, 50, 100, ALL]"
+                                            data-show-footer="false"
+                                            data-side-pagination="client"
+                                            data-row-style="rowStyle"
+                                            data-pagination-first-text="首页"
+                                            data-pagination-pre-text="上一页"
+                                            data-pagination-next-text="下一页"
+                                            data-pagination-last-text="最后一页" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th data-field="state" data-checkbox="true">状态</th>
+                                                <th data-field="id" data-visible="true">ID</th>
+                                                <th data-field="email" data-visible="true" data-editable="true">Email</th>
+                                                <th data-field="username" data-align="center" data-visible="true" data-editable="true">用户名</th>
+                                                <th data-field="password" data-align="center" data-visible="true" data-editable="true">密码</th>
+                                                <th data-field="common" data-align="center" data-visible="true" data-editable="true">备注</th>
+                                            </tr>
+                                        </thead>
+                                        <<range .Result>>
+                                            <tr>
+                                                <td></td>
+                                                <td><<.Id>></td>
+                                                <td><<.Email>></td>
+                                                <td><<.Username>></td>
+                                                <td><<.Password>></td>
+                                                <td><<.Common>></td>
+                                            </tr>
+                                        <<end>>
+                                    </table>
+                                </div>
+                            </div>
+    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <script src="/static/js/bootstrap-table.js"></script>
+    <script src="/static/js/bootstrap-editable.js"></script>
+    <script src="/static/js/bootstrapValidator.min.js"></script>
+    <script src="/static/js/bootstrap-table-editable.js"></script>
+    <script src="/static/js/bootstrap-table-export.js"></script>
+    <script src="/static/assets/js/bootstrap-datepicker.min.js"></script>
+    <script src="/static/js/tableExport.js"></script>
+    
+    <script language="JavaScript">
+            var ajax = $.ajax;
+            $.extend({
+                ajax: function(url, options) {
+                    if (typeof url === 'object') {
+                        options = url;
+                        url = undefined;
+                    }
+                    options = options || {};
+                    url = options.url;
+                    var xsrftoken = $('meta[name=_xsrf]').attr('content');
+                    var headers = options.headers || {};
+                    var domain = document.domain.replace(/\./ig, '\\.');
+                    if (!/^(http:|https:).*/.test(url) || eval('/^(http:|https:)\\/\\/(.+\\.)*' + domain + '.*/').test(url)) {
+                        headers = $.extend(headers, {'X-Xsrftoken':xsrftoken});
+                    }
+                    options.headers = headers;
+                    return ajax(url, options);
+                }
+            });
+            $.fn.editable.defaults.url = "/admin/userchange";
+            function Check(id) {
+                window.open("http://"+window.location.host+"/loan/debx?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Add() {
+                window.open("http://www.baidu.com/","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function CheckRsyslog(id) {
+                window.open("http://install.qiyi.domain/install/api/v1/rsyslog?hostname="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Checkflow(id) {
+                window.open("http://"+window.location.host+"/init/history?flow=1&sn="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Checklog(id) {
+                window.open("http://"+window.location.host+"/init/history?log=1&sn="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Check2() {
+                window.open("http://"+window.location.host+"/ansible/id2","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Update(id) {
+                window.open("http://"+window.location.host+"/ansible/update?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+            function Update2(id) {
+                window.open("http://"+window.location.host+"/ansible/update2?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            }
+    
+            function detailFormatter(index, row) {
+                var html = [];
+                $.each(row, function (key, value) {
+                    html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+                });
+                return html.join('');
+            }
+            var $table = $('#tabled2'),
+                $remove = $('#remove'),
+                selections = [];
+    
+            function getIdSelections() {
+                return $.map($table.bootstrapTable('getSelections'), function (row) {
+                    return row.id
+                });
+            }
+    
+            $table.on('check.bs.table uncheck.bs.table ' +
+                    'check-all.bs.table uncheck-all.bs.table', function () {
+                $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
+                // save your data, here just save the current page
+                selections = getIdSelections();
+                // push or splice the selections if you want to save all data selections
+            });
+            $remove.click(function () {
+                var r = confirm("确定删除吗？")
+                if(r==true){
+                    var ids = getIdSelections();
+                    $.ajax({
+                        url:'/admin/userdel?ids='+ids.join(),
+                        type:'Post',
+                        success:function (data) {
+                            alert(data);
+                            $table.bootstrapTable('remove', {
+                                field: 'id',
+                                values: ids
+                            });
+                        }
+                    })
+                    $remove.prop('disabled', true);
+                }
+    
+            });
+    
+    </script>

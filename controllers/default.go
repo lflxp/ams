@@ -62,6 +62,12 @@ func (this *MainController) Tag() {
 
 func (this *MainController) List() {
 	this.Data["Title"] = "目录"
+	result := make([]LoginUser, 0)
+	err := Db.Engine.Find(&result)
+	if err != nil {
+		this.Ctx.WriteString(err.Error())
+	}
+	this.Data["Result"] = result
 	this.TplName = "config/list.html"
 }
 
