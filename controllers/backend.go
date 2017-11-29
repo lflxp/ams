@@ -14,26 +14,26 @@ type EasyInstallController struct {
 	beego.Controller
 }
 
-func (this *EasyInstallController) Prepare() {
-	//记录访问日志
-	beegoSessionId := this.Ctx.GetCookie("beegosessionID")
-	username, isExist := cache.Cached.Get(beegoSessionId)
-	history := new(LoginHistory)
-	history.InsertTime = time.Now().Format("2006-01-02 15:04:05")
-	if isExist {
-		history.Username = username.(string)
-	} else {
-		history.Username = "未登陆用户"
-	}
-	history.Referer = this.Ctx.Request.Referer()
-	history.RemoteAddr = this.Ctx.Request.RemoteAddr
-	history.RequestURI = this.Ctx.Request.RequestURI
-	history.Host = this.Ctx.Request.Host
-	history.Method = this.Ctx.Request.Method
-	history.Proto = this.Ctx.Request.Proto
-	history.UserAgent = this.Ctx.Request.UserAgent()
-	Db.Engine.Insert(history)
-}
+// func (this *EasyInstallController) Prepare() {
+// 	//记录访问日志
+// 	beegoSessionId := this.Ctx.GetCookie("beegosessionID")
+// 	username, isExist := cache.Cached.Get(beegoSessionId)
+// 	history := new(LoginHistory)
+// 	history.InsertTime = time.Now().Format("2006-01-02 15:04:05")
+// 	if isExist {
+// 		history.Username = username.(string)
+// 	} else {
+// 		history.Username = "未登陆用户"
+// 	}
+// 	history.Referer = this.Ctx.Request.Referer()
+// 	history.RemoteAddr = this.Ctx.Request.RemoteAddr
+// 	history.RequestURI = this.Ctx.Request.RequestURI
+// 	history.Host = this.Ctx.Request.Host
+// 	history.Method = this.Ctx.Request.Method
+// 	history.Proto = this.Ctx.Request.Proto
+// 	history.UserAgent = this.Ctx.Request.UserAgent()
+// 	Db.Engine.Insert(history)
+// }
 
 func (this *EasyInstallController) Login() {
 	types := this.Ctx.Input.Param(":type")
