@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 	// "time"
 	"github.com/astaxie/beego"
@@ -11,6 +12,7 @@ import (
 	. "github.com/lflxp/ams/utils/db"
 	// "github.com/lflxp/ams/utils/cache"
 	"github.com/lflxp/ams/utils/pag"
+	"github.com/lflxp/ams/utils/config"
 )
 
 type MainController struct {
@@ -41,7 +43,10 @@ type MainController struct {
 // 	history.Method = this.Ctx.Request.Method
 // 	history.Proto = this.Ctx.Request.Proto
 // 	history.UserAgent = this.Ctx.Request.UserAgent()
-// 	Db.Engine.Insert(history)	
+// 	_,err := Db.Engine.Insert(history)	
+// 	if err != nil {
+// 		fmt.Println("insert",err.Error())
+// 	}
 // }
 
 func (this *MainController) Get() {
@@ -60,23 +65,62 @@ func (this *MainController) Tag() {
 	this.TplName = "cloud.html"
 }
 
+/**
+动态标签
+ETCD_URL /ams/main/backend/heading
+KEY /ams/main/backend/heading/2b
+Value 2b::文艺青年::曾经沧海难为水 除却巫山不是云
+说明: value由三个字段组成 分别对应的是html的:ID:NAME:TABINFO
+*/
 func (this *MainController) List() {
-	this.Data["Title"] = "目录"
+	//动态生成menu
+	var list,tab string
+	Menu := map[string]string{}
+	
 	result := make([]LoginUser, 0)
 	err := Db.Engine.Find(&result)
 	if err != nil {
 		this.Ctx.WriteString(err.Error())
 	}
+	//获取etcd配置信息
+	st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+	st.InitClientConn()
+	defer st.Close()
+	resp := st.More(beego.AppConfig.String("menu::list"))
+	
+	//id::href::name::info
+	for _,info := range resp.Kvs {
+		if strings.ContainsAny(string(info.Value),"::") {
+			tmp := strings.Split(string(info.Value),"::")
+			if len(tmp) == 3 {
+				l,t := config.Htmls.Create2(tmp[0],"#"+tmp[0],tmp[1],tmp[2],false)
+				list += l
+				tab += t
+			}
+		}
+	}
+	Menu["list"] = list
+	Menu["tab"] = tab
+	this.Data["List"] = "active"
+	this.Data["Maps"] = Menu
+	this.Data["Title"] = "后台管理"
 	this.Data["Result"] = result
 	this.TplName = "config/list.html"
 }
 
+/**
+//主页跳转
+ETCD_URL /ams/main/index
+KEY /ams/main/index/config
+Value 配置管理::<a href="/config"><button class="btn btn-success">配置管理</button></a>
+说明： NAME:HTML的标签
+*/
 func (this *MainController) Main() {
 	data := []string{}
 	st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
 	st.InitClientConn()
 	defer st.Close()
-	resp := st.More("/ams/main/index")
+	resp := st.More(beego.AppConfig.String("menu::index"))
 	
 	for _,info := range resp.Kvs {
 		if strings.ContainsAny(string(info.Value),"::") {
@@ -93,7 +137,7 @@ func (this *MainController) Config() {
 	this.Data["Tree"] = st.GetTreeByString()
 	this.Data["Column"] = etcd.GetEtcdTemplate() 
 	this.Data["Title"] = "配置管理"
-	this.Data["Config"] = "class='active'"
+	this.Data["Config"] = "active"
 	this.TplName = "config/config.html"
 }
 
@@ -112,14 +156,88 @@ func (this *MainController) Admin() {
 			this.Data["Brand"] = "后台管理" //top.html 主题显示
 			this.TplName = "admin/history/history.html"
 		} else if types == "gethistory" {
-			var order string
+			var order,search string
 			var offset, limit int
 			this.Ctx.Input.Bind(&order, "order")
+			this.Ctx.Input.Bind(&search, "search")
 			this.Ctx.Input.Bind(&offset, "offset")
 			this.Ctx.Input.Bind(&limit, "limit")
 
-			this.Data["json"] = pag.HistoryPagintor(order, offset, limit)
+			if search == "" {
+				this.Data["json"] = pag.HistoryPagintor(order, offset, limit)
+			} else {
+				this.Data["json"] = pag.Search(order,search, offset, limit)
+			}
+			
 			this.ServeJSON()
+		} 
+	} else {
+		if types == "userdel" {
+			var ids string
+			this.Ctx.Input.Bind(&ids, "ids")
+			data := new(LoginUser)
+			if strings.Contains(ids, ",") != true {
+				_, err := Db.Engine.Id(ids).Delete(data)
+				if err != nil {
+					this.Ctx.WriteString(err.Error())
+				}
+			} else {
+				for _, i := range strings.Split(ids, ",") {
+					_, err := Db.Engine.Id(i).Delete(data)
+					if err != nil {
+						this.Ctx.WriteString(err.Error())
+					}
+				}
+			}
+			this.Ctx.WriteString("删除成功")
+		} else if types == "userchange" {
+			var name, value, pk string
+			this.Ctx.Input.Bind(&name, "name")
+			this.Ctx.Input.Bind(&value, "value")
+			this.Ctx.Input.Bind(&pk, "pk")
+
+			loan := new(LoginUser)
+			has, err := Db.Engine.Id(pk).Get(loan)
+			if err != nil {
+				this.Ctx.WriteString(err.Error())
+			}
+			if has == false {
+				this.Ctx.WriteString("not exist")
+			}
+			switch name {
+			case "email":
+				loan.Email = value
+			case "username":
+				loan.Username = value
+			case "password":
+				loan.Password = tool.JiaMi(value)
+			case "common":
+				loan.Common = value
+			}
+			affected, err := Db.Engine.Id(pk).Update(loan)
+			if err != nil {
+				fmt.Println(err.Error())
+				this.Ctx.WriteString(err.Error())
+			}
+			this.Ctx.WriteString(fmt.Sprintf("update %d success", affected))
+		} else if types == "historydel" {
+			var ids string
+			this.Ctx.Input.Bind(&ids, "ids")
+			data := new(LoginHistory)
+			if strings.Contains(ids, ",") != true {
+				_, err := Db.Engine.Id(ids).Delete(data)
+				if err != nil {
+					this.Ctx.WriteString(err.Error())
+				}
+			} else {
+				for _, i := range strings.Split(ids, ",") {
+					_, err := Db.Engine.Id(i).Delete(data)
+					if err != nil {
+						this.Ctx.WriteString(err.Error())
+					}
+				}
+			}
+			this.Ctx.WriteString("删除成功")
 		}
 	}	
 }

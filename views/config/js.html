@@ -31,7 +31,7 @@
             window.open("http://"+window.location.host+"/loan/debx?id="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
         }
         function Add() {
-            window.open("http://www.baidu.com/","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+            window.open("http://"+window.location.host+"/login/login","new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
         }
         function CheckRsyslog(id) {
             window.open("http://install.qiyi.domain/install/api/v1/rsyslog?hostname="+id,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
@@ -60,7 +60,7 @@
             return html.join('');
         }
         var $table = $('#tabled2'),
-            $remove = $('#remove'),
+            $remove = $('#remove2'),
             selections = [];
 
         function getIdSelections() {
@@ -85,7 +85,44 @@
                     type:'Post',
                     success:function (data) {
                         alert(data);
-                        $table.bootstrapTable('remove2', {
+                        $table.bootstrapTable('remove', {
+                            field: 'id',
+                            values: ids
+                        });
+                    }
+                })
+                $remove.prop('disabled', true);
+            }
+
+        });
+
+        var $table1 = $('#tabled1'),
+            $remove1 = $('#remove1'),
+            selections1 = [];
+
+        function getIdSelections1() {
+            return $.map($table1.bootstrapTable('getSelections'), function (row) {
+                return row.id
+            });
+        }
+
+        $table1.on('check.bs.table uncheck.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+            $remove1.prop('disabled', !$table1.bootstrapTable('getSelections').length);
+            // save your data, here just save the current page
+            selections1 = getIdSelections1();
+            // push or splice the selections if you want to save all data selections
+        });
+        $remove1.click(function () {
+            var r = confirm("确定删除吗？")
+            if(r==true){
+                var ids = getIdSelections1();
+                $.ajax({
+                    url:'/admin/historydel?ids='+ids.join(),
+                    type:'Post',
+                    success:function (data) {
+                        alert(data);
+                        $table.bootstrapTable('remove', {
                             field: 'id',
                             values: ids
                         });

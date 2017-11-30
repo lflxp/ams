@@ -670,8 +670,8 @@
     var server = new Vue({
         el:'#wrappers',
         data:{
-            tree:"ibox col-md-3",
-            table:"col-md-9",
+            tree:"ibox col-md-3 col-xs-3 col-sm-3",
+            table:"col-md-9 col-xs-9 col-sm-9",
             treeok:true,
             show:true,
             tabs:true,
@@ -719,11 +719,11 @@
 //                1 左键 2中建 3右键
                 if (e.which == 3) {
                     this.treeok = true
-                    this.table = "col-md-9"
+                    this.table = "col-md-9 col-xs-9 col-sm-9"
 
                 } else if (e.which == 1) {
                     this.treeok = false
-                    this.table = "col-md-12"
+                    this.table = "col-md-12 col-xs-12 col-sm-12"
                 }
 //                else if (e.which == 2) {
 //                    this.treeok = !this.treeok

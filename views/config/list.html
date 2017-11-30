@@ -70,10 +70,11 @@
     <<template "template/top.html" .>>       
     <div class="row">
         <!-- start 9 -->
-        <div class="col-md-9">
+        <div class="col-md-9 col-xs-9 col-sm-9">
             <div class="tab-content">
                 <<template "config/ios.html" .>> 
                 <<template "config/home.html" .>> 
+                <<index .Maps "tab" | str2html>>    
                 <div class="tab-pane fade" id="test">
                     <p>123321</p>
                 </div>
@@ -81,7 +82,7 @@
         <!-- end 9 -->    
         </div>
         <!-- start 3-->
-        <div class="col-md-3">
+        <div class="col-md-3 col-xs-3 col-sm-3">
 
             <ul class="list-group">
                 <li class="list-group-item">
@@ -91,7 +92,7 @@
             </ul>
             <div class="panel panel-default">
                     <!-- Default panel contents -->
-                <div class="panel-heading">Panel heading</div>
+                <div class="panel-heading">Admin</div>
                 <div class="panel-body">
                     <table border="1">
                         <tr>
@@ -109,20 +110,20 @@
                     </table>
                 </div>
                 
-                <!-- List group -->
+                <!-- List group /ams/main/backend/heading/  str2html-->
                 <ul class="list-group">
-                    <li class="list-group-item"><span class="glyphicon glyphicon-star" aria-hidden="true"></span><a href="#ios" data-toggle="tab" > Cras justo odio</a><span class="badge">42</span></li>
-                    <li class="list-group-item"><a href="#home" data-toggle="tab" role="tab">菜鸟教程</a></li>
-                    <li class="list-group-item"><a href="#test" data-toggle="tab" role="tab">Porta ac consectetur ac</a></li>
-                    <li class="list-group-item">Vestibulum at eros</li>
+                    <li class="list-group-item"><span class="glyphicon glyphicon-star" aria-hidden="true"></span><a href="#ios" data-toggle="tab" > 用户管理 </a><span class="badge">42</span></li>
+                    <li class="list-group-item"><a href="#home" data-toggle="tab" role="tab">操作历史</a></li>
                 </ul>
             </div>
+            
             <div class="list-group">
-                <a href="#" class="list-group-item active">Cras justo odio</a>
+                <a href="#" class="list-group-item active">自定义标签</a>
                 <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
                 <a href="#" class="list-group-item">Morbi leo risus</a>
                 <a href="#" class="list-group-item">Porta ac consectetur ac</a>
                 <a href="#" class="list-group-item">Vestibulum at eros</a>
+                <<index .Maps "list" | str2html>>
             </div>
            
         <!-- end 3 -->    

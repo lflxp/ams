@@ -51,7 +51,7 @@ type Data struct {
 
 //用户名
 type LoginUser struct {
-	Id 		int64		`xorm:"autoincr"`
+	Id 		int64		`xorm:"pk autoincr"`
 	Email 		string		`xorm:"email varchar(40) unique(u_kv)"`
 	Username 	string		`xorm:"username varchar(40) unique(u_kv)"`
 	Password 	string		`xorm:"password varchar(40) unique(u_kv)"`
@@ -67,7 +67,7 @@ type LoginUser struct {
 //println(this.Ctx.Request.Proto)
 //println(this.Ctx.Request.UserAgent())
 type LoginHistory struct {
-	Id 		int64		`xorm:"autoincr"`
+	Id 		int64		
 	Username 	string		`xorm:"username varchar(40)"`
 	Referer 	string		`xorm:"referer varchar(200)"`
 	RemoteAddr 	string		`xorm:"remoteAddr varchar(40)"`
