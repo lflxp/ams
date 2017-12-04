@@ -128,7 +128,33 @@ func (this *MainController) Main() {
 		}
 	}
 	this.Data["Item"] = data
-	this.TplName = "main/main.html"
+	this.TplName = "main/main2.html"
+}
+
+func (this *MainController) Api() {
+	types := this.Ctx.Input.Param(":type")
+	if this.Ctx.Request.Method == "GET" {
+		if types == "main" {
+			data := map[string][]map[string]string{}
+			st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			st.InitClientConn()
+			defer st.Close()
+			resp := st.More(beego.AppConfig.String("menu::index"))
+			
+			for _,info := range resp.Kvs {
+				if strings.ContainsAny(string(info.Value),"::") {
+					tmp := map[string]string{}
+					s1 := strings.Split(string(info.Value),"::")
+					tmp["name"] = s1[0]
+					tmp["url"] = s1[1]
+					data["data"] = append(data["data"],tmp)
+				}
+			}
+			this.Data["json"] = data
+			this.ServeJSON()
+		}
+	}
+	
 }
 
 func (this *MainController) Config() {
