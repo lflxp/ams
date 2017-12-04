@@ -31,7 +31,7 @@
         <script type="text/javascript" src="/static/js/jtopo/jquery.snippet.min.js"></script>  
         <script src="/static/js/jtopo-0.4.8-min.js"></script>
         <script src="/static/js/toolbar.js"></script>
-        <script id='code'>
+        <!-- <script id='code'>
             $(document).ready(function(){
                 
                 $.ajax({
@@ -69,26 +69,26 @@
                             }
                         }
 
-                        // for(var item in data.data) {
-                        //     // alert(data.data[item].name);
-                        //     // alert(data.data[item].url);
+                        for(var item in data.data) {
+                            // alert(data.data[item].name);
+                            // alert(data.data[item].url);
                             
-                        //     var node = new JTopo.Node(data.data[item].name);
-                        //     node.shadow = false;
-                        //     node.setSize(30, 30);
-                        //     node.rotate = Math.random(); // 旋转角度
-                        //     node.textPosition = "Middle_Center";
-                        //     var s = 2;
-                        //     var x = Math.random() * stage.width * s - Math.random() * stage.width * s;
-                        //     var y = Math.random() * stage.height * s - Math.random() * stage.height * s;
-                        //     node.setLocation(x, y);
-                        //     node.fillColor = JTopo.util.randomColor();
-                        //     node.addEventListener('mouseup',function(event){
-                        //         currendNode = this;
-                        //         handler(event);
-                        //     })
-                        //     scene.add(node);
-                        // }
+                            var node = new JTopo.Node(data.data[item].name);
+                            node.shadow = false;
+                            node.setSize(30, 30);
+                            node.rotate = Math.random(); // 旋转角度
+                            node.textPosition = "Middle_Center";
+                            var s = 2;
+                            var x = Math.random() * stage.width * s - Math.random() * stage.width * s;
+                            var y = Math.random() * stage.height * s - Math.random() * stage.height * s;
+                            node.setLocation(x, y);
+                            node.fillColor = JTopo.util.randomColor();
+                            node.addEventListener('mouseup',function(event){
+                                currentNode = this;
+                                handler(event);
+                            })
+                            scene.add(node);
+                        }
 
                         node.addEventListener('mouseup', function(event){
                             currentNode = this;
@@ -147,11 +147,12 @@
                 });
 
             });
-        </script>
+        </script> -->
         
     </head>
     <body>
         <ul id="contextmenu" style="display:none;">    
+            <li><a>主页跳转</a></li>
             <li><a>顺时针旋转</a></li>
             <li><a>逆时针旋转</a></li>    
             <li><a>更改颜色</a></li>
@@ -164,7 +165,7 @@
             
         <canvas id="canvas"></canvas>	
                             
-        <!-- <script>
+        <script>
                 // $(document).ready(function(){					
                 //     var canvas = document.getElementById('canvas');
                 //     var canvaspanel = document.getElementById('rows');
@@ -267,102 +268,44 @@
                     window.open(url,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
                 }
 
-                var currentNode = null;
-            
                 $(document).ready(function(){					
-                    var canvas = document.getElementById('canvas');
-                    var ctx = canvas.getContext('2d');
-            
-                    ctx.canvas.width = document.body.clientWidth;
-                    ctx.canvas.height = document.body.clientHeight;
-
-                    // 创建一个舞台
-                    var stage = new JTopo.Stage(canvas);
-                    //显示工具栏
-                    showJTopoToobar(stage);
-                    
-                    stage.eagleEye.visible = true;
-            
-                    // 设计一个场景
-                    var scene = new JTopo.Scene(stage);	
-                    scene.backgroundColor = "0,200,0";
-                    scene.background = './img/bg.jpg';
-                    scene.alpha = 0.1;		
-                    
-                    function handler(event){
-                        if(event.button == 2){// 右键
-                            // 当前位置弹出菜单（div）
-                            $("#contextmenu").css({
-                                top: event.pageY,
-                                left: event.pageX
-                            }).show();    
-                        }
-                    }
-                    
-                    // 向场景增加节点
-                    // for(var i= 0; i<500; i++){
-                    //     var node = new JTopo.Node('' + i);
-                    //     node.shadow = false;
-                    //     node.setSize(30, 30);
-                    //     node.rotate = Math.random(); // 旋转角度
-                    //     node.textPosition = "Middle_Center";
-                    //     var s = 2;
-                    //     var x = Math.random() * stage.width * s - Math.random() * stage.width * s;
-                    //     var y = Math.random() * stage.height * s - Math.random() * stage.height * s;
-                    //     node.setLocation(x, y);
-                    //     node.fillColor = JTopo.util.randomColor();
-                    //     node.addEventListener('mouseup',function(event){
-                    //         currendNode = this;
-                    //         // alert(event.textPosition); 
-                    //         Bai();
-                    //     })
-                    //     scene.add(node);
-                    // };
-                    stage.click(function(event){
-                        if(event.button == 0){// 右键
-                            // 关闭弹出菜单（div）
-                            $("#contextmenu").hide();
-                        }
-                    });
-
-                    $("#contextmenu a").click(function(){
-                        var text = $(this).text();
-                        alert(text);
-                        
-                        if(text == '删除该节点'){
-                            scene.remove(currentNode);
-                            currentNode = null;
-                        }if(text == '撤销上一次操作'){
-                            currentNode.restore();
-                        }else{
-                            currentNode.save();
-                        }
-                        
-                        if(text == '更改颜色'){
-                            currentNode.fillColor = JTopo.util.randomColor();
-                        }else if(text == '顺时针旋转'){
-                            currentNode.rotate += 0.5;
-                        }else if(text == '逆时针旋转'){
-                            currentNode.rotate -= 0.5;
-                        }else if(text == '放大'){
-                            currentNode.scaleX += 0.2;
-                            currentNode.scaleY += 0.2;
-                        }else if(text == '缩小'){
-                            currentNode.scaleX -= 0.2;
-                            currentNode.scaleY -= 0.2;
-                        }
-                        $("#contextmenu").hide();
-                    });
-
                     $.ajax({
                         url:'/api/v1/main',
                         type:'GET',
                         success:function(data){
-                            for(var item in data.data) {
-                                // alert(data.data[item].name);
-                                // alert(data.data[item].url);
-                                
-                                var node = new JTopo.Node(data.data[item].name);
+                            var currentNode = null;
+                            var canvas = document.getElementById('canvas');
+                            var ctx = canvas.getContext('2d');
+                    
+                            ctx.canvas.width = document.body.clientWidth;
+                            ctx.canvas.height = document.body.clientHeight;
+
+                            // 创建一个舞台
+                            var stage = new JTopo.Stage(canvas);
+                            //显示工具栏
+                            showJTopoToobar(stage);
+                            
+                            stage.eagleEye.visible = true;
+                    
+                            // 设计一个场景
+                            var scene = new JTopo.Scene(stage);	
+                            // scene.backgroundColor = "0,200,0";
+                            scene.background = './img/bg.jpg';
+                            scene.alpha = 0.1;		
+                            
+                            function handler(event,url){
+                                if(event.button == 2){// 右键
+                                    // 当前位置弹出菜单（div）
+                                    $("#contextmenu").css({
+                                        top: event.pageY,
+                                        left: event.pageX
+                                    }).show();    
+                                }
+                            }
+                            
+                            // 向场景增加节点
+                            for(var i= 0; i<1000; i++){
+                                var node = new JTopo.Node('' + i);
                                 node.shadow = false;
                                 node.setSize(30, 30);
                                 node.rotate = Math.random(); // 旋转角度
@@ -373,16 +316,121 @@
                                 node.setLocation(x, y);
                                 node.fillColor = JTopo.util.randomColor();
                                 node.addEventListener('mouseup',function(event){
-                                    currendNode = this;
+                                    currentNode = this;
+                                    // alert(event.textPosition); 
+                                    // Bai();
                                     handler(event);
                                 })
                                 scene.add(node);
+                            };
+                            stage.click(function(event){
+                                if(event.button == 0){// 右键
+                                    // 关闭弹出菜单（div）
+                                    $("#contextmenu").hide();
+                                }
+                            });
+
+                            function ShowObjProperty(Obj) 
+                            { 
+                                var PropertyList=''; 
+                                var PropertyCount=0; 
+                                for(i in Obj){ 
+                                    if(Obj.i !=null) 
+                                    PropertyList=PropertyList+i+'属性：'+Obj.i+'\r\n'; 
+                                else 
+                                    PropertyList=PropertyList+i+'方法\r\n'; 
+                                } 
+                                console.log(PropertyList);
+                                alert(PropertyList); 
+                            } 
+
+                            $("#contextmenu a").click(function(){
+                                var text = $(this).text();
+                                
+                                if(text == '删除该节点'){
+                                    scene.remove(currentNode);
+                                    currentNode = null;
+                                }if(text == '撤销上一次操作'){
+                                    currentNode.restore();
+                                }else{
+                                    currentNode.save();
+                                }
+                                
+                                if(text == '更改颜色'){
+                                    currentNode.fillColor = JTopo.util.randomColor();
+                                }else if(text == '顺时针旋转'){
+                                    // ShowObjProperty(currentNode);
+                                    currentNode.rotate += 0.5;
+                                }else if(text == '逆时针旋转'){
+                                    // alert(currentNode.text);
+                                    // alert(currentNode.url);
+                                    currentNode.rotate -= 0.5;
+                                }else if(text == '放大'){
+                                    currentNode.scaleX += 0.2;
+                                    currentNode.scaleY += 0.2;
+                                }else if(text == '缩小'){
+                                    currentNode.scaleX -= 0.2;
+                                    currentNode.scaleY -= 0.2;
+                                }else if(text == '主页跳转'){
+                                    var fd = currentNode.url.indexOf("http")
+                                    if(fd == 0){
+                                        // window.location.href = currentNode.url;
+                                        window.open(currentNode.url,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+                                    }else if(fd == -1){
+                                        window.open("http://"+window.location.host+currentNode.url,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+                                    }
+                                }
+                                $("#contextmenu").hide();
+                            });
+
+                            // 流式布局（水平、垂直间隔均为10)
+                            var flowLayout = JTopo.layout.FlowLayout(10, 10);
+                            
+                            // 网格布局(4行3列)
+                            var gridLayout = JTopo.layout.GridLayout(4, 3);
+                            
+                            var container2 = new JTopo.Container('点击切换布局');
+                            container2.layout = flowLayout;
+                            container2.fillColor = '143,188,143';
+                            container2.setBound(10, 10, 300, 200);            
+                            scene.add(container2);
+
+                            for(var item in data.data) {
+                                // alert(data.data[item].name);
+                                // alert(data.data[item].url);
+                                if(data.data[item].name != ''){
+                                    var node = new JTopo.Node(data.data[item].name);
+                                    node.shadow = false;
+                                    node.url = data.data[item].url;
+                                    node.setSize(30, 30);
+                                    node.rotate = Math.random(); // 旋转角度
+                                    node.textPosition = "Middle_Center";
+                                    var s = 2;
+                                    var x = Math.random() * stage.width * s - Math.random() * stage.width * s;
+                                    var y = Math.random() * stage.height * s - Math.random() * stage.height * s;
+                                    node.setLocation(x, y);
+                                    node.fillColor = JTopo.util.randomColor();
+                                    node.addEventListener('mouseup',function(event){
+                                        currentNode = this;
+                                        handler(event);
+                                    })
+                                    scene.add(node);
+                                    container2.add(node);
+                                }
                             }
+
+                            container2.click(function(){
+                                if(container2.layout === flowLayout){
+                                    container2.layout = gridLayout;
+                                }else{
+                                    container2.layout = flowLayout;
+                                }
+                            });
                         }
                     });
 
                 });
-            </script> -->
+            </script>
 
     </body>
 </html>
