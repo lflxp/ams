@@ -12,7 +12,7 @@ func init() {
     beego.Router("/vue", &controllers.MainController{},"get,post:Vue")
     beego.Router("/tag", &controllers.MainController{},"get,post:Tag")
     beego.Router("/", &controllers.MainController{},"get,post:Main")
-    beego.Router("/config", &controllers.MainController{},"get,post:Config")
+    beego.Router("/config/?:type", &controllers.MainController{},"get,post:Config")
     beego.Router("/list", &controllers.MainController{},"get,post:List")
     beego.Router("/options/?:type", &controllers.MainController{},"get,post:Options")
     beego.Router("/admin/?:type", &controllers.MainController{},"get,post:Admin")

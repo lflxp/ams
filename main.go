@@ -13,6 +13,7 @@ func main() {
 	// beego.BConfig.WebConfig.Session.SessionGCMaxLifetime = 7 * 24 * 3600
 	// beego.BConfig.WebConfig.Session.SessionCookieLifeTime = 7 * 24 * 3600
 	beego.SetStaticPath("/img","img")
+	beego.SetStaticPath("/config/img","img")
 	//修改模板关键字
 	beego.BConfig.WebConfig.TemplateLeft = "<<"
 	beego.BConfig.WebConfig.TemplateRight = ">>"

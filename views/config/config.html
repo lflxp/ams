@@ -473,8 +473,16 @@
                     $remove = $('#remove'),
                     selections = [];
 
+                    if(dataed.column == true) {
+                        $table.bootstrapTable('showColumn','status');
+                        $table.bootstrapTable('showColumn','mgm');
+                    } else {
+                        $table.bootstrapTable('hideColumn','status');
+                        $table.bootstrapTable('hideColumn','mgm');
+                    }
                     $table.bootstrapTable({
                         columns: eval(<<.Column>>),
+                        // columns: dataed.column,
                     });
                     $table.bootstrapTable('load',dataed);
                     $('#showeditable').click();
@@ -507,28 +515,30 @@
                         $remove.prop('disabled', true);
                     });
                     $('#loading').hide();
-                    $.each($table.bootstrapTable('getData'), function (idx, obj) {
-                        var obj = eval(obj);
-                        $.ajax({
-                            type: "get",
-                            url: "/options/scan?ip="+obj.ip+"&idc="+obj.机房,
-                            async: true,
-//                            data: {"id": id},
-                            success: function (data) {
-                                var ddd = data.split(",");
-                                $table.bootstrapTable('updateRow', {
-                                    index:idx,
-                                    row: {
-                                        ppp: ddd[0],
-                                        status: ddd[1],
-                                        opinfo:'扫描完成'
-                                    }
-                                });
+                    if(dataed.column == true) {
+                        $.each($table.bootstrapTable('getData'), function (idx, obj) {
+                            var obj = eval(obj);
+                            $.ajax({
+                                type: "get",
+                                url: "/options/scan?key="+obj.id,
+                                async: true,
+    //                            data: {"id": id},
+                                success: function (data) {
+                                    var ddd = data.split(",");
+                                    $table.bootstrapTable('updateRow', {
+                                        index:idx,
+                                        row: {
+                                            status: ddd[0],
+                                            ppp: ddd[1],
+                                            opinfo:'扫描完成'
+                                        }
+                                    });
 
-                            }
+                                }
 
+                            });
                         });
-                    });
+                    }
                 }
             });
         })

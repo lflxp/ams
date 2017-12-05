@@ -19,6 +19,39 @@ type MainController struct {
 	beego.Controller
 }
 
+//初始化默认配置管理
+func init() {
+	beego.Informational("初始化etcd默认信息")
+	var err error
+	data := map[string]string{}
+	//基础路径
+	data["/ams"] = "介绍:ams项目配置主路径"
+	data["/ams/main"] = "介绍:主页配置路径"
+	data["/ams/main/backend"] = "后台动态标签"
+	data["/ams/main/backend/heading"] = "heading标签"
+	data["/ams/main/index"] = "介绍::主页网站跳转配置"
+	//服务注册 拓扑图
+	data["/ams/main/services"] = "介绍::服务注册及监控"
+	data["/ams/main/services/server"] = "AMS系统后台::http://127.0.0.1"
+	//主页配置 页面名称::跳转界面
+	data["/ams/main/index/config"] = "配置管理::/config/config"
+	data["/ams/main/index/top"] = "全网拓扑图::/config/top"
+	data["/ams/main/index/grafana"] = "grafana::http://10.6.200.8:3000"
+	data["/ams/main/index/blog"] = "我的微博::http://www.lflxp.cn"
+	//自定义标签
+	//ID::NAME::html|string
+	data["/ams/main/backend/heading/2b"] = "2b::文艺青年::曾经沧海难为水 除却巫山不是云"
+	st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+	for key,value := range data {
+		err = st.Add(key,value)
+		if err != nil {
+			beego.Critical(err.Error())
+			return
+		}
+	}
+	defer st.Close()
+}
+
 // func (this *MainController) Prepare() {
 // 	//记录访问日志
 // 	this.EnableXSRF = false
@@ -152,19 +185,57 @@ func (this *MainController) Api() {
 			}
 			this.Data["json"] = data
 			this.ServeJSON()
+		} else if types == "services" {
+			data := map[string][]map[string]string{}
+			st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			st.InitClientConn()
+			defer st.Close()
+			resp := st.More(beego.AppConfig.String("menu::services"))
+			
+			for _,info := range resp.Kvs {
+				if strings.ContainsAny(string(info.Value),"::") {
+					tmp := map[string]string{}
+					s1 := strings.Split(string(info.Value),"::")
+					tmp["key"] = string(info.Key)
+					tmp["name"] = s1[0]
+					tmp["url"] = s1[1]
+					data["data"] = append(data["data"],tmp)
+				}
+			}
+			this.Data["json"] = data
+			this.ServeJSON()	
+		} else if types == "etcd" {
+			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}	
+			rs,err := st.GetTreeByMapJtopo()
+			if err != nil {
+				this.Data["json"] = err.Error()
+				this.ServeJSON()
+				return
+			}			
+			this.Data["json"] = rs
+			this.ServeJSON() 
 		}
 	}
 	
 }
 
 func (this *MainController) Config() {
-	st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
-	this.Data["Brand"] = "配置管理" //top.html 主题显示
-	this.Data["Tree"] = st.GetTreeByString()
-	this.Data["Column"] = etcd.GetEtcdTemplate() 
-	this.Data["Title"] = "配置管理"
-	this.Data["Config"] = "active"
-	this.TplName = "config/config.html"
+	types := this.Ctx.Input.Param(":type")
+	if this.Ctx.Request.Method == "GET" {
+		if types == "config" {
+			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			this.Data["Brand"] = "配置管理" //top.html 主题显示
+			this.Data["Tree"] = st.GetTreeByString()
+			this.Data["Column"] = etcd.GetEtcdServiceTemplate() 
+			this.Data["Title"] = "配置管理"
+			this.Data["Config"] = "active"
+			this.TplName = "config/config.html"
+		} else if types == "top" {
+			this.Data["Title"] = "全网拓扑图"
+			this.Data["Top"] = "active"
+			this.TplName = "config/top.html"
+		} 
+	}
 }
 
 func (this *MainController) Admin() {
@@ -300,34 +371,15 @@ func (this *MainController) Options() {
 			}
 			this.Ctx.WriteString("删除成功")
 		} else if types == "scan" {
-			sc := new(ServiceConfig)
-			//service := new(Service)
-			ip := this.GetString("ip")
-			idc := this.GetString("idc")
-			_, err := Db.Engine.Where("ip = ?", ip).And("idc = ?", idc).Get(sc)
-			if err != nil {
-				beego.Error(err.Error())
-			}
-			//_,err = Db.Engine.Where("sn = ?","001").Get(service)
-			//if err != nil {
-			//	logs.Error(err.Error())
-			//}
+			key := this.GetString("key")
+			
 			result := []string{}
-			if sc.Ports != "" {
-				if strings.Contains(sc.Ports, "|") {
-					for _, v := range strings.Split(sc.Ports, "|") {
-						if tool.CommTool.ScannerPort(sc.Ip + ":" + v) {
-							result = append(result, "<button class='btn btn-xs btn-success'>"+v+"</button>")
-						} else {
-							result = append(result, "<button class='btn btn-xs btn-danger'>"+v+"</button>")
-						}
-					}
+			if strings.ContainsAny(key,"@") {
+				tmp := strings.Split(key, "@")[1]
+				if tool.CommTool.ScannerPort(tmp) {
+					result = append(result, "<button class='btn btn-xs btn-success'>"+tmp+"</button>")
 				} else {
-					if tool.CommTool.ScannerPort(sc.Ip + ":" + sc.Ports) {
-						result = append(result, "<button class='btn btn-xs btn-success'>"+sc.Ports+"</button>")
-					} else {
-						result = append(result, "<button class='btn btn-xs btn-danger'>"+sc.Ports+"</button>")
-					}
+					result = append(result, "<button class='btn btn-xs btn-danger'>"+tmp+"</button>")
 				}
 			} else {
 				result = append(result, "<button class='btn btn-xs btn-danger'>无配置</button>")
@@ -351,6 +403,12 @@ func (this *MainController) Options() {
 			}
 			//xxo := cmdb.Api.ParseData(name)
 			xxo := cmdb.Api.ParseDataEtcd(name,[]string{beego.AppConfig.String("etcd::url")})
+			if strings.Contains(name,"/ams/main/services") {
+				xxo["column"] = true 
+			} else {
+				xxo["column"] = false 
+			}
+			// beego.Critical(xxo["column"])
 			this.Data["json"] = xxo
 			this.ServeJSON()
 			//
