@@ -27,17 +27,23 @@ func init() {
 	//基础路径
 	data["/ams"] = "介绍:ams项目配置主路径"
 	data["/ams/main"] = "介绍:主页配置路径"
+	data["/ams/main/ansible"] = "ansible管理模块"
 	data["/ams/main/backend"] = "后台动态标签"
-	data["/ams/main/backend/heading"] = "heading标签"
 	data["/ams/main/index"] = "介绍::主页网站跳转配置"
+	//ansible模块
+	//"获取访问端自身IP的接口"
+	data["/ams/main/ansible/ip"] = fmt.Sprintf("http://%s:%s/api/v1/ip",beego.AppConfig.String("host"),beego.AppConfig.String("httpport"))
+	data["/ams/main/ansible/key"] = beego.AppConfig.String("ansible::key")
+	//后端动态标签
+	data["/ams/main/backend/heading"] = "heading标签"
 	//服务注册 拓扑图
 	data["/ams/main/services"] = "介绍::服务注册及监控"
 	data["/ams/main/services/server"] = "AMS系统后台::http://127.0.0.1"
 	//主页配置 页面名称::跳转界面
-	data["/ams/main/index/config"] = "配置管理::/config/config"
-	data["/ams/main/index/top"] = "全网拓扑图::/config/top"
-	data["/ams/main/index/grafana"] = "grafana::http://10.6.200.8:3000"
-	data["/ams/main/index/blog"] = "我的微博::http://www.lflxp.cn"
+	data["/ams/main/index/config"] = beego.AppConfig.String("tag::config") 
+	data["/ams/main/index/top"] = beego.AppConfig.String("tag::top") 
+	data["/ams/main/index/grafana"] = beego.AppConfig.String("tag::grafana") 
+	data["/ams/main/index/blog"] = beego.AppConfig.String("tag::blog") 
 	//自定义标签
 	//ID::NAME::html|string
 	data["/ams/main/backend/heading/2b"] = "2b::文艺青年::曾经沧海难为水 除却巫山不是云"
@@ -214,6 +220,8 @@ func (this *MainController) Api() {
 			}			
 			this.Data["json"] = rs
 			this.ServeJSON() 
+		} else if types == "ip" {
+			this.Ctx.WriteString(strings.Split(this.Ctx.Request.RemoteAddr,":")[0])
 		}
 	}
 	
