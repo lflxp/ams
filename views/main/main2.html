@@ -141,7 +141,7 @@
                                 if(text == '删除该节点'){
                                     scene.remove(currentNode);
                                     currentNode = null;
-                                }if(text == '撤销上一次操作'){
+                                }else if(text == '撤销上一次操作'){
                                     currentNode.restore();
                                 }else{
                                     currentNode.save();

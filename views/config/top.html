@@ -28,6 +28,27 @@
         #contextmenu li a:hover {
             background: #fff;
         }
+        #contextmenued {
+            border: 1px solid #aaa;
+            border-bottom: 0;
+            background: #eee;
+            position: absolute;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: none;
+        }
+                                                                                   
+        #contextmenued li a {
+            display: block;
+            padding: 10px;
+            border-bottom: 1px solid #aaa;
+            cursor: pointer;
+        }
+                                                                                   
+        #contextmenued li a:hover {
+            background: #fff;
+        }
     </style>
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>   
     <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>  
@@ -93,6 +114,15 @@
     <<template "template/top.html" .>>   
     <center>
         <div id="content">
+                <ul id="contextmenued" style="display:none;">    
+                    <li><a>主页跳转</a></li>
+                    <li><a>顺时针旋转</a></li>
+                    <li><a>逆时针旋转</a></li>    
+                    <li><a>更改颜色</a></li>
+                    <li><a>放大</a></li>
+                    <li><a>缩小</a></li>    
+                    <li><a>删除该节点</a></li>
+                </ul>
                 <div class="menu" id="nav_menu"></div>
                 <canvas id="canvas"></canvas>
         </div>
@@ -102,12 +132,7 @@
         var url="http://10.6.200.8:3000/dashboard/db/liu-liang-zhan-shi";
         window.open(url,'newwindow','height=600,width=400,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no,depended=yes');
     }
-    function handler(event) {
-        $("#contextmenu").css({
-            top: event.pageY,
-            left: event.pageX,
-        }).fadeIn(350);
-    };
+    
     function addLink(nodeA,nodeB,scene) {
         var link = new JTopo.Link(nodeA, nodeB);
         scene.add(link);  
@@ -133,90 +158,13 @@
 
         $("body").prepend(w);
     };
-    // 简单连线
-    function newLink(nodeA, nodeZ,scene, text,dashedPattern){
-        var link = new JTopo.Link(nodeA, nodeZ, text);        
-        link.lineWidth = 3; // 线宽
-        link.bundleOffset = 60; // 折线拐角处的长度
-        link.bundleGap = 20; // 线条之间的间隔
-        link.textOffsetY = 3; // 文本偏移量（向下3个像素）
-        link.strokeColor = JTopo.util.randomColor(); // 线条颜色随机
-        link.dashedPattern = dashedPattern; 
-        //设置link mouseover 显示
-        link.moreInfo = new Map();
-        link.moreInfo.set('name',nodeZ.text);
-        link.moreInfo.set('expressNo','<a href="http://www.baidu.com">百度</a>')
-        link.moreInfo.set('title','标题')
-        link.moreInfo.set('按钮测试','<button class="btn btn-primary">点我</button>')
-        link.moreInfo.set('流量监控','<a href="javascript:void(0)" target=_blank '+ 'onclick=gotoURL()>' + 'Grafana'+'</a>')
-        link.addEventListener('mouseover',function(event){
-            newMsgBox(this.moreInfo);
-            handler(event);
-        });
-        link.mouseout(function(event) {
-            $("#contextmenu").hide();
-            $("#contextmenu").remove();
-        });
-        scene.add(link);
-        return link;
-    }
-    function Getinfo(obj,cloudNode,scene,effect) {
-        if(cloudNode == "") {
-            cloudNode = new JTopo.Node(obj.name);
-            cloudNode.setSize(30, 26);
-            // cloudNode.setLocation(560,280);			
-            cloudNode.textPosition = "Top_Center";
-            cloudNode.layout = {type: 'tree', width:600, height: 400}
-            // cloudNode.layout = {type: 'circle', radius: 160}
-            scene.add(cloudNode); 
-        }
-        if(obj.hasOwnProperty('nodes')){
-            if(obj.name != "") {
-                var node = new JTopo.Node(obj.name);
-                node.fillStyle = '200,255,0';
-                node.radius = 15;
-                node.fillColor = JTopo.util.randomColor();
-                node.setLocation(scene.width * Math.random(), scene.height * Math.random());
-                // if(obj.name == "ams"){
-                //     node.layout = {type: 'tree', width:100, height: 100, direction: 'right'};
-                // } else if(obj.name == "main"){
-                //     node.layout = {type: 'tree', width:100, height: 100, direction: 'bottom'}; 
-                // } else {
-                //     node.layout = {type: 'tree', width:100, height: 100};
-                // }
-                node.layout = {type: 'tree', width:100, height: 100}; 
-                // node.layout = {type:'circle',radius:60};
-                
-                scene.add(node);								
-                addLink(cloudNode,node,scene); 
-                // effect.addNode(cloudNode,node);
-                for(var item in obj.nodes) {
-                    Getinfo(obj.nodes[item],node,scene,effect)
-                }
-            }
-        } else {
-            if(obj.name != "" && obj.name != cloudNode.name){
-                var node = new JTopo.CircleNode(obj.name);
-                node.fillStyle = '200,255,0';
-                node.radius = 10;
-                node.setLocation(scene.width * Math.random(), scene.height * Math.random());
-                node.layout = {type: 'tree', width:50, height: 100, direction: 'bottom'};
-                // node.layout = {type: 'circle',radius: 60};
-                
-                scene.add(node);								
-                // addLink(cloudNode,node,scene); 
-                newLink(cloudNode,node,scene,"Link",1); 
-                // newLink(cloudNode,node,scene,"Out",1); 
-                // effect.addNode(cloudNode,node);
-            }
-        }
-        JTopo.layout.layoutNode(scene, cloudNode, true);
-    }
+   
     $(document).ready(function(){		
         $.ajax({
             url:'/api/v1/etcd',
             type:'GET',
             success:function(data){
+                var currentNode = null;
                 var canvas = document.getElementById('canvas');
                 var ctx = canvas.getContext('2d');
                             
@@ -232,7 +180,146 @@
                 // stage.frames = 24;
                 stage.add(scene);
                 scene.background = '/img/bg.jpg';
-                
+
+                function handler(event) {
+                    $("#contextmenu").css({
+                        top: event.pageY,
+                        left: event.pageX,
+                    }).fadeIn(350);
+                };
+
+                function handlerR(event) {
+                    if(event.button == 2){// 右键
+                        // 当前位置弹出菜单（div）
+                        $("#contextmenued").css({
+                            top: event.pageY,
+                            left: event.pageX
+                        }).show();    
+                    }
+                }
+                $("#contextmenued a").click(function(){
+                    var text = $(this).text();
+                    
+                    if(text == '删除该节点'){
+                        scene.remove(currentNode);
+                        currentNode = null;
+                    }else if(text == '撤销上一次操作'){
+                        currentNode.restore();
+                    }else{
+                        currentNode.save();
+                    }
+                    
+                    if(text == '更改颜色'){
+                        currentNode.fillColor = JTopo.util.randomColor();
+                    }else if(text == '顺时针旋转'){
+                        // ShowObjProperty(currentNode);
+                        currentNode.rotate += 0.5;
+                    }else if(text == '逆时针旋转'){
+                        // alert(currentNode.text);
+                        // alert(currentNode.url);
+                        currentNode.rotate -= 0.5;
+                    }else if(text == '放大'){
+                        currentNode.scaleX += 0.2;
+                        currentNode.scaleY += 0.2;
+                    }else if(text == '缩小'){
+                        currentNode.scaleX -= 0.2;
+                        currentNode.scaleY -= 0.2;
+                    }else if(text == '主页跳转'){
+                        var fd = currentNode.url.indexOf("http")
+                        if(fd == 0){
+                            // window.location.href = currentNode.url;
+                            window.open(currentNode.url,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+                        }else if(fd == -1){
+                            window.open("http://"+window.location.host+currentNode.url,"new open monitor","height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0");
+                        }
+                    }
+                    $("#contextmenued").hide();
+                });
+
+                // 简单连线
+                function newLink(nodeA, nodeZ,scene, text,dashedPattern){
+                    var link = new JTopo.Link(nodeA, nodeZ, text);        
+                    link.lineWidth = 3; // 线宽
+                    link.bundleOffset = 60; // 折线拐角处的长度
+                    link.bundleGap = 20; // 线条之间的间隔
+                    link.textOffsetY = 3; // 文本偏移量（向下3个像素）
+                    link.strokeColor = JTopo.util.randomColor(); // 线条颜色随机
+                    link.dashedPattern = dashedPattern; 
+                    //设置link mouseover 显示
+                    link.moreInfo = new Map();
+                    link.moreInfo.set('name',nodeZ.text);
+                    link.moreInfo.set('expressNo','<a href="http://www.baidu.com">百度</a>')
+                    link.moreInfo.set('title','标题')
+                    link.moreInfo.set('按钮测试','<button class="btn btn-primary">点我</button>')
+                    link.moreInfo.set('流量监控','<a href="javascript:void(0)" target=_blank '+ 'onclick=gotoURL()>' + 'Grafana'+'</a>')
+                    link.addEventListener('mouseover',function(event){
+                        newMsgBox(this.moreInfo);
+                        handler(event);
+                    });
+                    link.mouseout(function(event) {
+                        $("#contextmenu").hide();
+                        $("#contextmenu").remove();
+                    });
+                    scene.add(link);
+                    return link;
+                }
+                function Getinfo(obj,cloudNode,scene,effect) {
+                    if(cloudNode == "") {
+                        cloudNode = new JTopo.Node(obj.name);
+                        cloudNode.setSize(30, 26);
+                        // cloudNode.setLocation(560,280);			
+                        cloudNode.textPosition = "Top_Center";
+                        cloudNode.layout = {type: 'tree', width:600, height: 400}
+                        // cloudNode.layout = {type: 'circle', radius: 160}
+                        scene.add(cloudNode); 
+                    }
+                    if(obj.hasOwnProperty('nodes')){
+                        if(obj.name != "") {
+                            var node = new JTopo.Node(obj.name);
+                            node.fillStyle = '200,255,0';
+                            node.radius = 15;
+                            node.fillColor = JTopo.util.randomColor();
+                            node.setLocation(scene.width * Math.random(), scene.height * Math.random());
+                            // if(obj.name == "ams"){
+                            //     node.layout = {type: 'tree', width:100, height: 100, direction: 'right'};
+                            // } else if(obj.name == "main"){
+                            //     node.layout = {type: 'tree', width:100, height: 100, direction: 'bottom'}; 
+                            // } else {
+                            //     node.layout = {type: 'tree', width:100, height: 100};
+                            // }
+                            node.layout = {type: 'tree', width:100, height: 100}; 
+                            // node.layout = {type:'circle',radius:60};
+                            
+                            scene.add(node);								
+                            addLink(cloudNode,node,scene); 
+                            // effect.addNode(cloudNode,node);
+                            for(var item in obj.nodes) {
+                                Getinfo(obj.nodes[item],node,scene,effect);
+                            }
+                        }
+                    } else {
+                        if(obj.name != "" && obj.name != cloudNode.name){
+                            var node = new JTopo.CircleNode(obj.name);
+                            node.fillStyle = '200,255,0';
+                            node.radius = 10;
+                            node.setLocation(scene.width * Math.random(), scene.height * Math.random());
+                            node.layout = {type: 'tree', width:50, height: 100, direction: 'bottom'};
+                            // node.layout = {type: 'circle',radius: 60};
+                            node.addEventListener('mouseup',function(event){
+                                currentNode = this;
+                                handlerR(event);
+                            })
+                            
+                            scene.add(node);								
+                            // addLink(cloudNode,node,scene); 
+                            newLink(cloudNode,node,scene,"Link",1); 
+                            // newLink(cloudNode,node,scene,"Out",1); 
+                            // effect.addNode(cloudNode,node);
+                        }
+                    }
+                    JTopo.layout.layoutNode(scene, cloudNode, true);
+                }
+
                 for(var item in data) {
                     if(data[item].name != "") {
                         // var cloudNode = new JTopo.Node(data[item].name);
