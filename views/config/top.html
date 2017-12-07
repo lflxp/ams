@@ -37,7 +37,7 @@
     <script src="/static/js/toolbar.js"></script>
     <style type="text/css">
         body {
-            padding-top: 70px;
+            padding-top: 50px;
             padding-left: 0px;
             padding-right: 0px;
             /*padding-bottom: 70px;*/
@@ -98,43 +98,119 @@
         </div>
     </center>    
 <script>
-    function Getinfo(obj,cloudNode,scene) {
+    function gotoURL(){
+        var url="http://10.6.200.8:3000/dashboard/db/liu-liang-zhan-shi";
+        window.open(url,'newwindow','height=600,width=400,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no,depended=yes');
+    }
+    function handler(event) {
+        $("#contextmenu").css({
+            top: event.pageY,
+            left: event.pageX,
+        }).fadeIn(350);
+    };
+    function addLink(nodeA,nodeB,scene) {
+        var link = new JTopo.Link(nodeA, nodeB);
+        scene.add(link);  
+        return link;
+    }
+    function newMsgBox(moreInfo) {
+        var trInfo = '';
+        for (var kv of moreInfo) {
+            if (kv[0] == 'title') {
+            continue;
+            }
+            trInfo = trInfo +
+            '<tr>' +
+            '<td style="color:#2779aa">' + kv[0] + '</td><td>' + kv[1] + '</td>' +
+            '</tr>';
+        };
+        var w = $('<div id="contextmenu" style="display:none;z-index:99999;">').html('' +
+            '<table>' +
+            '<thead><tr><th>' + moreInfo.get('title') + '</th><th>&nbsp</th></tr></thead>' +
+            '<tbody>' + trInfo + '</tbody>' +
+            '</table>'
+        );
+
+        $("body").prepend(w);
+    };
+    // 简单连线
+    function newLink(nodeA, nodeZ,scene, text,dashedPattern){
+        var link = new JTopo.Link(nodeA, nodeZ, text);        
+        link.lineWidth = 3; // 线宽
+        link.bundleOffset = 60; // 折线拐角处的长度
+        link.bundleGap = 20; // 线条之间的间隔
+        link.textOffsetY = 3; // 文本偏移量（向下3个像素）
+        link.strokeColor = JTopo.util.randomColor(); // 线条颜色随机
+        link.dashedPattern = dashedPattern; 
+        //设置link mouseover 显示
+        link.moreInfo = new Map();
+        link.moreInfo.set('name',nodeZ.text);
+        link.moreInfo.set('expressNo','<a href="http://www.baidu.com">百度</a>')
+        link.moreInfo.set('title','标题')
+        link.moreInfo.set('按钮测试','<button class="btn btn-primary">点我</button>')
+        link.moreInfo.set('流量监控','<a href="javascript:void(0)" target=_blank '+ 'onclick=gotoURL()>' + 'Grafana'+'</a>')
+        link.addEventListener('mouseover',function(event){
+            newMsgBox(this.moreInfo);
+            handler(event);
+        });
+        link.mouseout(function(event) {
+            $("#contextmenu").hide();
+            $("#contextmenu").remove();
+        });
+        scene.add(link);
+        return link;
+    }
+    function Getinfo(obj,cloudNode,scene,effect) {
+        if(cloudNode == "") {
+            cloudNode = new JTopo.Node(obj.name);
+            cloudNode.setSize(30, 26);
+            // cloudNode.setLocation(560,280);			
+            cloudNode.textPosition = "Top_Center";
+            cloudNode.layout = {type: 'tree', width:600, height: 400}
+            // cloudNode.layout = {type: 'circle', radius: 160}
+            scene.add(cloudNode); 
+        }
         if(obj.hasOwnProperty('nodes')){
             if(obj.name != "") {
-                var node = new JTopo.CircleNode(obj.name);
+                var node = new JTopo.Node(obj.name);
                 node.fillStyle = '200,255,0';
                 node.radius = 15;
+                node.fillColor = JTopo.util.randomColor();
                 node.setLocation(scene.width * Math.random(), scene.height * Math.random());
-                if(Math.random()%2 == 0){
-                    node.layout = {type: 'tree', width:100, height: 100, direction: 'top'};
-                } else if(Math.random%3 ==0){
-                    node.layout = {type: 'tree', width:100, height: 100, direction: 'right'}; 
-                } else {
-                    node.layout = {type: 'tree', width:100, height: 100, direction: 'left'};
-                }
-                
+                // if(obj.name == "ams"){
+                //     node.layout = {type: 'tree', width:100, height: 100, direction: 'right'};
+                // } else if(obj.name == "main"){
+                //     node.layout = {type: 'tree', width:100, height: 100, direction: 'bottom'}; 
+                // } else {
+                //     node.layout = {type: 'tree', width:100, height: 100};
+                // }
+                node.layout = {type: 'tree', width:100, height: 100}; 
                 // node.layout = {type:'circle',radius:60};
                 
                 scene.add(node);								
-                var link = new JTopo.Link(cloudNode, node);
-                scene.add(link); 
+                addLink(cloudNode,node,scene); 
+                // effect.addNode(cloudNode,node);
                 for(var item in obj.nodes) {
-                    Getinfo(obj.nodes[item],node,scene)
+                    Getinfo(obj.nodes[item],node,scene,effect)
                 }
             }
         } else {
-            if(obj.name != ""){
+            if(obj.name != "" && obj.name != cloudNode.name){
                 var node = new JTopo.CircleNode(obj.name);
                 node.fillStyle = '200,255,0';
                 node.radius = 10;
                 node.setLocation(scene.width * Math.random(), scene.height * Math.random());
-                // node.layout = {type: 'tree', width:50, height: 100};
-                node.layout = {type: 'circle',radius: 60};
+                node.layout = {type: 'tree', width:50, height: 100, direction: 'bottom'};
+                // node.layout = {type: 'circle',radius: 60};
                 
                 scene.add(node);								
-                scene.add(new JTopo.Link(cloudNode,node)); 
+                // addLink(cloudNode,node,scene); 
+                newLink(cloudNode,node,scene,"Link",1); 
+                // newLink(cloudNode,node,scene,"Out",1); 
+                // effect.addNode(cloudNode,node);
             }
         }
+        JTopo.layout.layoutNode(scene, cloudNode, true);
     }
     $(document).ready(function(){		
         $.ajax({
@@ -145,25 +221,27 @@
                 var ctx = canvas.getContext('2d');
                             
                 ctx.canvas.width = document.body.clientWidth;
-                ctx.canvas.height = document.body.clientHeight * 3;
+                ctx.canvas.height = document.body.clientWidth;
 
                 var stage = new JTopo.Stage(canvas);
                 //显示工具栏
                 showJTopoToobar(stage);
 
                 var scene = new JTopo.Scene();
+                // scene.alpha = 1;
+                // stage.frames = 24;
                 stage.add(scene);
                 scene.background = '/img/bg.jpg';
                 
                 for(var item in data) {
                     if(data[item].name != "") {
-                        var cloudNode = new JTopo.Node(data[item].name);
-                        cloudNode.setSize(30, 26);
-                        cloudNode.setLocation(560,280);			
+                        // var cloudNode = new JTopo.Node(data[item].name);
+                        // cloudNode.setSize(30, 26);
+                        // cloudNode.setLocation(560,280);			
                         // cloudNode.layout = {type: 'tree', width:600, height: 400}
-                        cloudNode.layout = {type: 'circle', radius: 160}
+                        // // cloudNode.layout = {type: 'circle', radius: 160}
                         
-                        scene.add(cloudNode);
+                        // scene.add(cloudNode);
                         
                         // for(var i=1; i<4; i++){
                         //     var node = new JTopo.CircleNode('host' + i);
@@ -210,15 +288,23 @@
                         //         }
                         //     }
                         // }
-                        Getinfo(data[item],cloudNode,scene)
+                        // 定义效果
+                        var effect = JTopo.Effect.spring();
 
-                        JTopo.layout.layoutNode(scene, cloudNode, true);
+                        Getinfo(data[item],"",scene,effect);
+
+                        effect.play();
+
+                        // JTopo.layout.layoutNode(scene, cloudNode, true);
+
+                        //设置每个元素之间的距离和每个节点间的距离
+                        scene.doLayout(JTopo.layout.TreeLayout('right',50,207));
                         
-                        scene.addEventListener('mouseup', function(e){
-                            if(e.target && e.target.layout){
-                                JTopo.layout.layoutNode(scene, e.target, true);	
-                            }				
-                        });
+                        // scene.addEventListener('mouseup', function(e){
+                        //     if(e.target && e.target.layout){
+                        //         JTopo.layout.layoutNode(scene, e.target, true);	
+                        //     }				
+                        // });
                     } 
                 }
             }
