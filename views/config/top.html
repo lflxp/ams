@@ -250,6 +250,8 @@
                     link.moreInfo.set('name',nodeZ.text);
                     link.moreInfo.set('expressNo','<a href="http://www.baidu.com">百度</a>')
                     link.moreInfo.set('title','标题')
+                    link.moreInfo.set('ttl',nodeZ.moreInfo.get('ttl'))
+                    link.moreInfo.set('version',nodeZ.moreInfo.get('version'))
                     link.moreInfo.set('按钮测试','<button class="btn btn-primary">点我</button>')
                     link.moreInfo.set('流量监控','<a href="javascript:void(0)" target=_blank '+ 'onclick=gotoURL()>' + 'Grafana'+'</a>')
                     link.addEventListener('mouseover',function(event){
@@ -304,6 +306,10 @@
                             node.radius = 10;
                             node.setLocation(scene.width * Math.random(), scene.height * Math.random());
                             node.layout = {type: 'tree', width:50, height: 100, direction: 'bottom'};
+
+                            node.moreInfo = new Map();
+                            node.moreInfo.set('ttl',obj.ttl);
+                            node.moreInfo.set('version',obj.version);
                             // node.layout = {type: 'circle',radius: 60};
                             node.addEventListener('mouseup',function(event){
                                 currentNode = this;

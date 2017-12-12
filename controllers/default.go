@@ -205,6 +205,8 @@ func (this *MainController) Api() {
 					tmp["key"] = string(info.Key)
 					tmp["name"] = s1[0]
 					tmp["url"] = s1[1]
+					tmp["ttl"] = fmt.Sprintf("%d",info.Lease)
+					tmp["version"] = fmt.Sprintf("%d",info.Version)
 					data["data"] = append(data["data"],tmp)
 				}
 			}
@@ -212,6 +214,7 @@ func (this *MainController) Api() {
 			this.ServeJSON()	
 		} else if types == "etcd" {
 			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}	
+			defer st.Close()
 			rs,err := st.GetTreeByMapJtopo()
 			if err != nil {
 				this.Data["json"] = err.Error()
@@ -220,6 +223,9 @@ func (this *MainController) Api() {
 			}			
 			this.Data["json"] = rs
 			this.ServeJSON() 
+		} else if types == "etcdhost" {
+			//对客户端提供etcd服务器地址 简化客户端配置
+			this.Ctx.WriteString(beego.AppConfig.String("etcd::url"))
 		} else if types == "ip" {
 			this.Ctx.WriteString(strings.Split(this.Ctx.Request.RemoteAddr,":")[0])
 		}
