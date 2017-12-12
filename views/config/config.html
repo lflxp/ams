@@ -472,8 +472,9 @@
                     var $table = $('#tabled'),
                     $remove = $('#remove'),
                     selections = [];
-
+                    
                     if(dataed.column == true) {
+                        $table.bootstrapTable('hideColumn','value');
                         $table.bootstrapTable('showColumn','status');
                         $table.bootstrapTable('showColumn','mgm');
                     } else {
