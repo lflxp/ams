@@ -2,22 +2,41 @@ package controllers
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
-	// "time"
+	"time"
+
 	"github.com/astaxie/beego"
-	"github.com/lflxp/dbui/etcd"
-	"github.com/lflxp/ams/utils/cmdb"
 	. "github.com/lflxp/ams/models"
-	"github.com/lflxp/ams/utils/tool"
+	"github.com/lflxp/ams/utils/cmdb"
 	. "github.com/lflxp/ams/utils/db"
+	"github.com/lflxp/ams/utils/tool"
+	"github.com/lflxp/dbui/etcd"
 	// "github.com/lflxp/ams/utils/cache"
-	"github.com/lflxp/ams/utils/pag"
 	"github.com/lflxp/ams/utils/config"
+	"github.com/lflxp/ams/utils/pag"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type MainController struct {
 	beego.Controller
 }
+
+var HttpRequestCount = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "http_request_count",
+		Help: "http request count",
+	},
+	[]string{"endpoint"},
+)
+
+var HttpRequestDuration = prometheus.NewSummaryVec(
+	prometheus.SummaryOpts{
+		Name: "http_request_duration",
+		Help: "http request duration",
+	},
+	[]string{"endpoint"},
+)
 
 //初始化默认配置管理
 func init() {
@@ -32,7 +51,7 @@ func init() {
 	data["/ams/main/index"] = "介绍::主页网站跳转配置"
 	//ansible模块
 	//"获取访问端自身IP的接口"
-	data["/ams/main/ansible/ip"] = fmt.Sprintf("http://%s:%s/api/v1/ip",beego.AppConfig.String("host"),beego.AppConfig.String("httpport"))
+	data["/ams/main/ansible/ip"] = fmt.Sprintf("http://%s:%s/api/v1/ip", beego.AppConfig.String("host"), beego.AppConfig.String("httpport"))
 	data["/ams/main/ansible/key"] = beego.AppConfig.String("ansible::key")
 	//后端动态标签
 	data["/ams/main/backend/heading"] = "heading标签"
@@ -40,16 +59,16 @@ func init() {
 	data["/ams/main/services"] = "介绍::服务注册及监控"
 	data["/ams/main/services/server"] = "AMS系统后台::http://127.0.0.1"
 	//主页配置 页面名称::跳转界面
-	data["/ams/main/index/config"] = beego.AppConfig.String("tag::config") 
-	data["/ams/main/index/top"] = beego.AppConfig.String("tag::top") 
-	data["/ams/main/index/grafana"] = beego.AppConfig.String("tag::grafana") 
-	data["/ams/main/index/blog"] = beego.AppConfig.String("tag::blog") 
+	data["/ams/main/index/config"] = beego.AppConfig.String("tag::config")
+	data["/ams/main/index/top"] = beego.AppConfig.String("tag::top")
+	data["/ams/main/index/grafana"] = beego.AppConfig.String("tag::grafana")
+	data["/ams/main/index/blog"] = beego.AppConfig.String("tag::blog")
 	//自定义标签
 	//ID::NAME::html|string
 	data["/ams/main/backend/heading/2b"] = "2b::文艺青年::曾经沧海难为水 除却巫山不是云"
-	st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
-	for key,value := range data {
-		err = st.Add(key,value)
+	st := etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
+	for key, value := range data {
+		err = st.Add(key, value)
 		if err != nil {
 			beego.Critical(err.Error())
 			return
@@ -82,7 +101,7 @@ func init() {
 // 	history.Method = this.Ctx.Request.Method
 // 	history.Proto = this.Ctx.Request.Proto
 // 	history.UserAgent = this.Ctx.Request.UserAgent()
-// 	_,err := Db.Engine.Insert(history)	
+// 	_,err := Db.Engine.Insert(history)
 // 	if err != nil {
 // 		fmt.Println("insert",err.Error())
 // 	}
@@ -93,6 +112,18 @@ func (this *MainController) Get() {
 }
 
 func (this *MainController) Test() {
+	start := time.Now()
+	HttpRequestCount.WithLabelValues("/test").Inc()
+
+	n := rand.Intn(100)
+	if n >= 95 {
+		time.Sleep(100 * time.Millisecond)
+	} else {
+		time.Sleep(50 * time.Millisecond)
+	}
+
+	elapsed := (float64)(time.Since(start) / time.Millisecond)
+	HttpRequestDuration.WithLabelValues("/test").Observe(elapsed)
 	this.TplName = "test.html"
 }
 
@@ -113,26 +144,26 @@ Value 2b::文艺青年::曾经沧海难为水 除却巫山不是云
 */
 func (this *MainController) List() {
 	//动态生成menu
-	var list,tab string
+	var list, tab string
 	Menu := map[string]string{}
-	
+
 	result := make([]LoginUser, 0)
 	err := Db.Engine.Find(&result)
 	if err != nil {
 		this.Ctx.WriteString(err.Error())
 	}
 	//获取etcd配置信息
-	st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+	st := &etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
 	st.InitClientConn()
 	defer st.Close()
 	resp := st.More(beego.AppConfig.String("menu::list"))
-	
+
 	//id::href::name::info
-	for _,info := range resp.Kvs {
-		if strings.ContainsAny(string(info.Value),"::") {
-			tmp := strings.Split(string(info.Value),"::")
+	for _, info := range resp.Kvs {
+		if strings.ContainsAny(string(info.Value), "::") {
+			tmp := strings.Split(string(info.Value), "::")
 			if len(tmp) == 3 {
-				l,t := config.Htmls.Create2(tmp[0],"#"+tmp[0],tmp[1],tmp[2],false)
+				l, t := config.Htmls.Create2(tmp[0], "#"+tmp[0], tmp[1], tmp[2], false)
 				list += l
 				tab += t
 			}
@@ -156,14 +187,14 @@ Value 配置管理::<a href="/config"><button class="btn btn-success">配置管�
 */
 func (this *MainController) Main() {
 	data := []string{}
-	st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+	st := &etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
 	st.InitClientConn()
 	defer st.Close()
 	resp := st.More(beego.AppConfig.String("menu::index"))
-	
-	for _,info := range resp.Kvs {
-		if strings.ContainsAny(string(info.Value),"::") {
-			data = append(data,strings.Split(string(info.Value),"::")[1])
+
+	for _, info := range resp.Kvs {
+		if strings.ContainsAny(string(info.Value), "::") {
+			data = append(data, strings.Split(string(info.Value), "::")[1])
 		}
 	}
 	this.Data["Item"] = data
@@ -175,66 +206,66 @@ func (this *MainController) Api() {
 	if this.Ctx.Request.Method == "GET" {
 		if types == "main" {
 			data := map[string][]map[string]string{}
-			st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			st := &etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
 			st.InitClientConn()
 			defer st.Close()
 			resp := st.More(beego.AppConfig.String("menu::index"))
-			
-			for _,info := range resp.Kvs {
-				if strings.ContainsAny(string(info.Value),"::") {
+
+			for _, info := range resp.Kvs {
+				if strings.ContainsAny(string(info.Value), "::") {
 					tmp := map[string]string{}
-					s1 := strings.Split(string(info.Value),"::")
+					s1 := strings.Split(string(info.Value), "::")
 					tmp["name"] = s1[0]
 					tmp["url"] = s1[1]
-					data["data"] = append(data["data"],tmp)
+					data["data"] = append(data["data"], tmp)
 				}
 			}
 			this.Data["json"] = data
 			this.ServeJSON()
 		} else if types == "services" {
 			data := map[string][]map[string]string{}
-			st := &etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			st := &etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
 			st.InitClientConn()
 			defer st.Close()
 			resp := st.More(beego.AppConfig.String("menu::services"))
-			
-			for _,info := range resp.Kvs {
-				if strings.ContainsAny(string(info.Value),"::") {
+
+			for _, info := range resp.Kvs {
+				if strings.ContainsAny(string(info.Value), "::") {
 					tmp := map[string]string{}
-					s1 := strings.Split(string(info.Value),"::")
+					s1 := strings.Split(string(info.Value), "::")
 					tmp["key"] = string(info.Key)
 					tmp["name"] = s1[0]
 					tmp["url"] = s1[1]
-					data["data"] = append(data["data"],tmp)
+					data["data"] = append(data["data"], tmp)
 				}
 			}
 			this.Data["json"] = data
-			this.ServeJSON()	
+			this.ServeJSON()
 		} else if types == "etcd" {
-			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}	
-			rs,err := st.GetTreeByMapJtopo()
+			st := etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
+			rs, err := st.GetTreeByMapJtopo()
 			if err != nil {
 				this.Data["json"] = err.Error()
 				this.ServeJSON()
 				return
-			}			
+			}
 			this.Data["json"] = rs
-			this.ServeJSON() 
+			this.ServeJSON()
 		} else if types == "ip" {
-			this.Ctx.WriteString(strings.Split(this.Ctx.Request.RemoteAddr,":")[0])
+			this.Ctx.WriteString(strings.Split(this.Ctx.Request.RemoteAddr, ":")[0])
 		}
 	}
-	
+
 }
 
 func (this *MainController) Config() {
 	types := this.Ctx.Input.Param(":type")
 	if this.Ctx.Request.Method == "GET" {
 		if types == "config" {
-			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			st := etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
 			this.Data["Brand"] = "配置管理" //top.html 主题显示
 			this.Data["Tree"] = st.GetTreeByString()
-			this.Data["Column"] = etcd.GetEtcdServiceTemplate() 
+			this.Data["Column"] = etcd.GetEtcdServiceTemplate()
 			this.Data["Title"] = "配置管理"
 			this.Data["Config"] = "active"
 			this.TplName = "config/config.html"
@@ -242,7 +273,7 @@ func (this *MainController) Config() {
 			this.Data["Title"] = "全网拓扑图"
 			this.Data["Top"] = "active"
 			this.TplName = "config/top.html"
-		} 
+		}
 	}
 }
 
@@ -256,12 +287,12 @@ func (this *MainController) Admin() {
 				this.Ctx.WriteString(err.Error())
 			}
 			this.Data["Result"] = result
-			this.TplName = "admin/user/user.html"	
+			this.TplName = "admin/user/user.html"
 		} else if types == "history" {
 			this.Data["Brand"] = "后台管理" //top.html 主题显示
 			this.TplName = "admin/history/history.html"
 		} else if types == "gethistory" {
-			var order,search string
+			var order, search string
 			var offset, limit int
 			this.Ctx.Input.Bind(&order, "order")
 			this.Ctx.Input.Bind(&search, "search")
@@ -271,11 +302,11 @@ func (this *MainController) Admin() {
 			if search == "" {
 				this.Data["json"] = pag.HistoryPagintor(order, offset, limit)
 			} else {
-				this.Data["json"] = pag.Search(order,search, offset, limit)
+				this.Data["json"] = pag.Search(order, search, offset, limit)
 			}
-			
+
 			this.ServeJSON()
-		} 
+		}
 	} else {
 		if types == "userdel" {
 			var ids string
@@ -344,7 +375,7 @@ func (this *MainController) Admin() {
 			}
 			this.Ctx.WriteString("删除成功")
 		}
-	}	
+	}
 }
 
 func (this *MainController) Options() {
@@ -362,8 +393,8 @@ func (this *MainController) Options() {
 		} else if types == "aedit" {
 			key := this.GetString("key")
 			value := this.GetString("value")
-			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
-			err := st.Add(key,value)
+			st := etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
+			err := st.Add(key, value)
 			if err != nil {
 				this.Ctx.WriteString(err.Error())
 				return
@@ -371,7 +402,7 @@ func (this *MainController) Options() {
 			this.Ctx.WriteString("success")
 		} else if types == "delete" {
 			key := this.GetString("key")
-			st := etcd.EtcdUi{Endpoints:[]string{beego.AppConfig.String("etcd::url")}}
+			st := etcd.EtcdUi{Endpoints: []string{beego.AppConfig.String("etcd::url")}}
 			err := st.Delete(key)
 			if err != nil {
 				this.Ctx.WriteString(err.Error())
@@ -380,9 +411,9 @@ func (this *MainController) Options() {
 			this.Ctx.WriteString("删除成功")
 		} else if types == "scan" {
 			key := this.GetString("key")
-			
+
 			result := []string{}
-			if strings.ContainsAny(key,"@") {
+			if strings.ContainsAny(key, "@") {
 				tmp := strings.Split(key, "@")[1]
 				if tool.CommTool.ScannerPort(tmp) {
 					result = append(result, "<button class='btn btn-xs btn-success'>"+tmp+"</button>")
@@ -406,15 +437,15 @@ func (this *MainController) Options() {
 	} else if this.Ctx.Request.Method == "POST" {
 		if types == "check" {
 			name := this.GetString("ids")
-			if strings.Contains(name,"ETCD->") {
+			if strings.Contains(name, "ETCD->") {
 				name = ""
 			}
 			//xxo := cmdb.Api.ParseData(name)
-			xxo := cmdb.Api.ParseDataEtcd(name,[]string{beego.AppConfig.String("etcd::url")})
-			if strings.Contains(name,"/ams/main/services") {
-				xxo["column"] = true 
+			xxo := cmdb.Api.ParseDataEtcd(name, []string{beego.AppConfig.String("etcd::url")})
+			if strings.Contains(name, "/ams/main/services") {
+				xxo["column"] = true
 			} else {
-				xxo["column"] = false 
+				xxo["column"] = false
 			}
 			// beego.Critical(xxo["column"])
 			this.Data["json"] = xxo
