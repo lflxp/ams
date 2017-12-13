@@ -472,13 +472,29 @@
                     var $table = $('#tabled'),
                     $remove = $('#remove'),
                     selections = [];
-
+                    
                     if(dataed.column == true) {
+                        $table.bootstrapTable('hideColumn','value');
                         $table.bootstrapTable('showColumn','status');
                         $table.bootstrapTable('showColumn','mgm');
+                        $table.bootstrapTable('showColumn','did');
+                        $table.bootstrapTable('showColumn','dimage');
+                        $table.bootstrapTable('showColumn','dstate');
+                        $table.bootstrapTable('showColumn','dStatus');
+                        $table.bootstrapTable('showColumn','dports');
+                        $table.bootstrapTable('showColumn','dname');
+                        $table.bootstrapTable('showColumn','dcommand');
                     } else {
+                        $table.bootstrapTable('showColumn','value');
                         $table.bootstrapTable('hideColumn','status');
                         $table.bootstrapTable('hideColumn','mgm');
+                        $table.bootstrapTable('hideColumn','did');
+                        $table.bootstrapTable('hideColumn','dimage');
+                        $table.bootstrapTable('hideColumn','dstate');
+                        $table.bootstrapTable('hideColumn','dStatus');
+                        $table.bootstrapTable('hideColumn','dports');
+                        $table.bootstrapTable('hideColumn','dname');
+                        $table.bootstrapTable('hideColumn','dcommand');
                     }
                     $table.bootstrapTable({
                         columns: eval(<<.Column>>),
