@@ -1,11 +1,12 @@
 package cmdb
 
 import (
+	"github.com/astaxie/beego"
 	"github.com/lflxp/dbui/etcd"
 )
 
 type Apis struct {
-	Url 	string
+	Url string
 }
 
 var Api Apis
@@ -285,8 +286,8 @@ var Api Apis
 // }
 
 //解析api结果为map数据供json调用
-func (this *Apis) ParseDataEtcd(info string,con []string) map[string]interface{} {
-	etcdd := etcd.EtcdUi{Endpoints:con}
+func (this *Apis) ParseDataEtcd(info string, con []string) map[string]interface{} {
+	etcdd := etcd.EtcdUi{Endpoints: con, Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password")}
 	return etcdd.FindData(info)
 }
 
