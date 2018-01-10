@@ -224,7 +224,7 @@ func (this *MainController) Api() {
 			this.ServeJSON()
 		} else if types == "services" {
 			data := map[string][]map[string]string{}
-			st := &etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password")}
+			st := &etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
 			st.InitClientConn()
 			defer st.Close()
 			resp := st.More(beego.AppConfig.String("menu::services"))
@@ -244,7 +244,8 @@ func (this *MainController) Api() {
 			this.Data["json"] = data
 			this.ServeJSON()
 		} else if types == "etcd" {
-			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password")}
+			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
+			st.InitClientConn()
 			defer st.Close()
 			rs, err := st.GetTreeByMapJtopo()
 			if err != nil {
@@ -268,9 +269,11 @@ func (this *MainController) Config() {
 	types := this.Ctx.Input.Param(":type")
 	if this.Ctx.Request.Method == "GET" {
 		if types == "config" {
-			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password")}
+			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
+			st.InitClientConn()
+			defer st.Close()
 			this.Data["Brand"] = "配置管理" //top.html 主题显示
-			this.Data["Tree"] = st.GetTreeByString()
+			this.Data["Tree"] = st.GetTreeByStringFromMap()
 			this.Data["Column"] = etcd.GetEtcdServiceTemplate()
 			this.Data["Title"] = "配置管理"
 			this.Data["Config"] = "active"
@@ -399,7 +402,7 @@ func (this *MainController) Options() {
 		} else if types == "aedit" {
 			key := this.GetString("key")
 			value := this.GetString("value")
-			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password")}
+			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
 			err := st.Add(key, value)
 			if err != nil {
 				this.Ctx.WriteString(err.Error())
@@ -408,7 +411,7 @@ func (this *MainController) Options() {
 			this.Ctx.WriteString("success")
 		} else if types == "delete" {
 			key := this.GetString("key")
-			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password")}
+			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
 			err := st.Delete(key)
 			if err != nil {
 				this.Ctx.WriteString(err.Error())
