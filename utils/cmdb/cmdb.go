@@ -288,6 +288,8 @@ var Api Apis
 //解析api结果为map数据供json调用
 func (this *Apis) ParseDataEtcd(info string, con []string) map[string]interface{} {
 	etcdd := etcd.EtcdUi{Endpoints: con, Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password")}
+	etcdd.InitClientConn()
+	defer etcdd.Close()
 	return etcdd.FindData(info)
 }
 

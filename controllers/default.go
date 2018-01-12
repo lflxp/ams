@@ -66,7 +66,8 @@ func init() {
 	//自定义标签
 	//ID::NAME::html|string
 	data["/ams/main/backend/heading/2b"] = "2b::文艺青年::曾经沧海难为水 除却巫山不是云"
-	st := &etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password")}
+	st := &etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
+	st.InitClientConn()
 	for key, value := range data {
 		err = st.Add(key, value)
 		if err != nil {
