@@ -256,6 +256,18 @@ func (this *MainController) Api() {
 			}
 			this.Data["json"] = rs
 			this.ServeJSON()
+		} else if types == "echarts" {
+			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
+			st.InitClientConn()
+			defer st.Close()
+			rs, err := st.GetTreeByMapEcharts()
+			if err != nil {
+				this.Data["json"] = err.Error()
+				this.ServeJSON()
+				return
+			}
+			this.Data["json"] = rs
+			this.ServeJSON()
 		} else if types == "etcdhost" {
 			//对客户端提供etcd服务器地址 简化客户端配置
 			this.Ctx.WriteString(beego.AppConfig.String("etcd::url"))
@@ -283,6 +295,19 @@ func (this *MainController) Config() {
 			this.Data["Title"] = "全网拓扑图"
 			this.Data["Top"] = "active"
 			this.TplName = "config/top.html"
+		} else if types == "book" {
+			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
+			st.InitClientConn()
+			defer st.Close()
+			rs, err := st.GetTreeByMapEcharts()
+			if err != nil {
+				this.Data["Tree"] = err.Error()
+			} else {
+				this.Data["Tree"] = rs
+			}
+			this.Data["Title"] = "横向树状图"
+			this.Data["Book"] = "active"
+			this.TplName = "config/book.html"
 		}
 	}
 }
@@ -404,6 +429,8 @@ func (this *MainController) Options() {
 			key := this.GetString("key")
 			value := this.GetString("value")
 			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
+			st.InitClientConn()
+			defer st.Close()
 			err := st.Add(key, value)
 			if err != nil {
 				this.Ctx.WriteString(err.Error())
@@ -413,6 +440,8 @@ func (this *MainController) Options() {
 		} else if types == "delete" {
 			key := this.GetString("key")
 			st := etcd.EtcdUi{Endpoints: strings.Split(beego.AppConfig.String("etcd::url"), ","), Username: beego.AppConfig.String("etcd::username"), Password: beego.AppConfig.String("etcd::password"), Detail: map[string]string{}}
+			st.InitClientConn()
+			defer st.Close()
 			err := st.Delete(key)
 			if err != nil {
 				this.Ctx.WriteString(err.Error())
